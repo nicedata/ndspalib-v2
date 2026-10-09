@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["./src/main/*"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/tests",
+    "./src/main/util.ts",
+    "./src/modules/*",
+    "./src/components/*",
+    "./src/handlers/*",
+    "./src/ndspalib_v2/*"
+  ],
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    // "target": "es2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true /* Génère les fichiers de définitions de types (.d.ts) */,
+    "rootDir": "./src",
+    "outDir": "./dist" /* Dossier de sortie de la compilation */,
+    "emitDeclarationOnly": true /* tsup se chargera du JS, TS ne génère que les types */,
+    "strict": true /* Active la vérification stricte des types */,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "lib": [
+      "DOM",
+      "ESNext"
+    ] /* Indique à TS que le code s'exécute dans un navigateur */
+  },
+  "include": ["./src/**/*"]
+}
