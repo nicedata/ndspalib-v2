@@ -12,33 +12,28 @@
  *    nd-version: no data
  */
 
-const { BaseHandler } = require("./base_handler.js");
+import { AbstractProcessor } from "./abstract_processor";
 
-exports.VersionHandler = class VersionHandler extends BaseHandler {
+export class VersionHandler extends AbstractProcessor {
     constructor() {
-        super("VersionHandler");
-        // Singleton
-        if (!!VersionHandler._instance) {
-            return VersionHandler._instance;
-        }
-        VersionHandler._instance = this;
+        super();
     }
 
     /**
      * Process a given fragment.
      */
-    process = (fragment) => {
+    process = (fragment: Element) => {
         if (document.querySelectorAll("[nd-version]").length == 0) return;
 
         // Process this fragment
         fragment.querySelectorAll(`[nd-version]`).forEach((element) => {
             this.logger.info(`Processing element`, element);
-            element.textContent = nd.version;
+            element.textContent = nd_core.version;
         });
     };
 
     /**
      * Clean the DOM
      */
-    postprocess = () => {};
+    postprocess = () => { };
 };

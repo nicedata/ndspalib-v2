@@ -1,7 +1,8 @@
 import { ND_EVENTS, VERSION, CONTAINERS } from "../main/constants";
 import { Logger } from "./logger";
-import { EnvironmentHandler } from "../processors/environment_handler";
+import { EnvironmentProcessor } from "../processors/environment_processor";
 import JSON5 from 'json5';
+import { Util } from "./util";
 
 export class Fetcher {
     static ALLOW_ORIGIN = "http://localhost:8000";
@@ -12,7 +13,7 @@ export class Fetcher {
     logger = new Logger("Fetcher", true);
     events: CustomEvent[] = [];
     busy_indicator: HTMLElement | null = document.querySelector(`[${CONTAINERS.BUSY}]`);
-    environment_handler: EnvironmentHandler = new EnvironmentHandler();
+    environment_processor: EnvironmentProcessor = EnvironmentProcessor.getInstance();
 
     // Singleton constructor !
     constructor() {
@@ -27,6 +28,7 @@ export class Fetcher {
     };
 
     set_busy = () => {
+        this.busy_indicator ? {} : this.busy_indicator = document.querySelector(`[${CONTAINERS.BUSY}]`);
         this.busy_indicator ? (this.busy_indicator.style.display = "block") : {};
     };
 
@@ -97,7 +99,7 @@ export class Fetcher {
         // Add our own headers
         request.headers.append("X-Nd-Version", `"${VERSION}"`);
         request.headers.append("X-Nd-Url", `"${request.url}"`);
-        request.headers.append("X-Nd-Environment", `${JSON.stringify(this.environment_handler.envs)}`);
+        request.headers.append("X-Nd-Environment", `${JSON.stringify(this.environment_processor.get_environment())}`);
         // ! request.headers.append("X-Nd-Context", `${JSON.stringify(nd_core.context_handler.get_current_context())}`);
         // CORS
         // request.headers.append("Access-Control-Allow-Origin", Fetcher.ALLOW_ORIGIN);

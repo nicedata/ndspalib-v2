@@ -7,10 +7,10 @@
  * @class PollHandler
  * @extends AbstractProcessor
  */
+
 import { AbstractProcessor } from "./abstract_processor";
 import { Poll } from "../modules/poll";
-import { Checker } = require("../modules/checker.js");
-import { TimerTracker } = require("./timer_tracker.js");
+import { TimerTracker } from "../trackers/timer_tracker";
 
 /**
  * PollHandler class to handle polling of elements with the `nd-poll` attribute.
@@ -21,25 +21,20 @@ import { TimerTracker } = require("./timer_tracker.js");
  * @class PollHandler
  * @extends AbstractProcessor
  */
-exports.PollHandler = class PollHandler extends AbstractProcessor {
+export class PollProcessor extends AbstractProcessor {
     constructor() {
-        super("PollHandler");
-        // Singleton
-        if (!!PollHandler._instance) {
-            return PollHandler._instance;
-        }
-        PollHandler._instance = this;
+        super();
     }
 
     /**
      * Process a given fragment.
      */
-    process = (fragment) => {
+    process = (fragment: Element) => {
         // this.checker.check(fragment);
         // Process this fragment
         fragment.querySelectorAll(`[nd-poll]`).forEach((element) => {
             // Handle element in the Poll class
-            const poller = new Poll(element);
+            const poller = new Poll(element as HTMLElement);
             // Start polling
             this.start(poller);
         });
@@ -56,12 +51,12 @@ exports.PollHandler = class PollHandler extends AbstractProcessor {
      * @param {Poll} poller - The Poll instance to be polled.
      * @returns {void}
      */
-    start = (poller) => {
+    start = (poller: Poll) => {
         // Start a timer to poll the given poller
         const timeout_id = setTimeout(() => {
             this.run_poller(poller);
         }, poller.interval_ms);
-        new TimerTracker().register_timer(poller.element, timeout_id, poller.interval_ms);
+        TimerTracker.getInstance().register_timer(poller.element, timeout_id, poller.interval_ms);
     };
 
     /**
@@ -72,10 +67,11 @@ exports.PollHandler = class PollHandler extends AbstractProcessor {
      * @param {*} poller - The Poll instance to be polled.
      * @returns {void}
      */
-    run_poller = (poller) => {
+    run_poller = (poller: Poll) => {
         this.logger.info(`Polling ${poller.url} for element ${poller.element.dataset.ndtimer}...`);
         // Keep memory stack clean !
-        new TimerTracker().remove_timer(poller.element.dataset.ndtimer);
+        const timerId = poller.element.dataset.ndtimer;
+        timerId !== undefined ? TimerTracker.getInstance().remove_timer(timerId) : {};
         // Execute the poll action
         poller.poll();
         // The start a new poll !

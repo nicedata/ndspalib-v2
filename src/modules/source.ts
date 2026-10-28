@@ -1,51 +1,49 @@
 import { ND_EVENTS } from "../main/constants";
-import { ATTR_NAME, PARAM_NAME } from "../main/syntax";
+import { Attribute, ATTRIBUTE, check_fragment, PARAMETER } from "../syntax/syntax";
 import { HandlerTracker } from "../trackers/handler_tracker";
 import { Fetcher } from "./fetcher";
 import { Logger } from "./logger";
 import { Util } from "./util";
 
 export class Source {
-    logger: Logger = new Logger("Source", true);
+    logger: Logger;
     url: string = '';
     target: string = '';
     targets: Element[] = [];
 
-    constructor(public element: Element, public type: ATTR_NAME.MAIN | ATTR_NAME.SOURCE) {
+    constructor(public element: Element, public type: Attribute) {
+        check_fragment(element);
 
-        // Basic checks
-        if (element.hasAttribute(ATTR_NAME.MAIN) && element.hasAttribute(ATTR_NAME.SOURCE)) {
-            this.logger.error(`'${ATTR_NAME.MAIN}' and '${ATTR_NAME.SOURCE}' cannot appear on the same element`, element);
-            return;
-        }
-
-        this.url = element.getAttribute(PARAM_NAME.URL)?.trim() ?? '';
-        this.target = element.getAttribute(PARAM_NAME.TARGET)?.trim() ?? '';
+        this.logger = new Logger(`Source (${type.name})`, true);
+        this.url = element.getAttribute(PARAMETER.URL.name)?.trim() ?? '';
+        this.target = element.getAttribute(PARAMETER.TARGET.name)?.trim() ?? '';
 
         this.targets = this.target ? Array.from(document.querySelectorAll(this.target)) : [this.element];
 
         // Further checks
         if (!this.url) {
-            this.logger.error(`No valid URL defined in '${this.type}' on element`, element);
-            element.innerHTML = `<span style="color: red">Error: no valid url defined in '${this.type}' on element &lt;${element.tagName.toLowerCase()}.../"&gt;</span>`;
+            this.logger.error(`No valid URL defined in '${this.type.name}' on element`, element);
+            element.innerHTML = `<span style="color: red">Error: no valid url defined in '${this.type.name}' on element &lt;${element.tagName.toLowerCase()}... /"&gt;</span>`;
             return;
         }
 
         if (this.url === "/") {
-            this.logger.error(`The URL in '${this.type}' cannot be the root url (/) !`, this.element);
+            this.logger.error(`The URL in '${this.type.name}' cannot be the root url (/) !`, this.element);
             return;
         }
 
-        // Add an event listener for reset events
-        if (this.type === ATTR_NAME.SOURCE) {
+        if (type === ATTRIBUTE.SOURCE) {
+            // Add an event listener for reset events
             new HandlerTracker().add_listener(this.element as HTMLElement, ND_EVENTS.RESET, this.refresh);
         }
 
         this.refresh();
 
-        if (this.type === ATTR_NAME.MAIN) {
-            this.element.removeAttribute(ATTR_NAME.MAIN);
-            this.element.removeAttribute(PARAM_NAME.URL);
+
+        if (this.type === ATTRIBUTE.MAIN) {
+            this.element.removeAttribute(ATTRIBUTE.MAIN.name);
+            this.element.removeAttribute(PARAMETER.URL.name);
+            this.element.removeAttribute(PARAMETER.TARGET.name);
         }
     }
 

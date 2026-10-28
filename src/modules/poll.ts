@@ -13,22 +13,31 @@
  *    nd-target :   css selector to identify the target(s). If ommitted, the element iself is the target.
  *    nd-action :   an action to be executed befor or after the poliing
  */
-const { POLL_DEFAULT_INTERVAL_MS } = require("../constants.js");
-const { Logger } = require("./logger.js");
-const { Action } = require("./action.js");
-const { Fetcher } = require("./fetcher.js");
-const { Util } = require("./util.js");
+import { POLL_DEFAULT_INTERVAL_MS } from "../main/constants";
+import { Action } from "./action";
+import { Fetcher } from "./fetcher";
+import { Logger } from "./logger";
+import { Util } from "./util";
 
-exports.Poll = class Poll {
-    static LOGGER = new Logger("Poll", true);
+const LOGGER = new Logger("Poll", true);
 
-    constructor(element) {
-        this.logger = Poll.LOGGER;
+export class Poll {
+    logger: Logger;
+    element: HTMLElement;
+    uuid: string;
+    url: string;
+    interval_ms: number;
+    targets_selector: string;
+    action: Action | null;
+    can_poll: boolean;
+
+    constructor(element: HTMLElement) {
+        this.logger = LOGGER;
         this.element = element;
-        this.uuid = null;
-        this.url = null;
+        this.uuid = '';
+        this.url = '';
         this.interval_ms = 0;
-        this.targets_selector = null;
+        this.targets_selector = '';
         this.action = null;
         this.can_poll = false;
 
@@ -43,20 +52,21 @@ exports.Poll = class Poll {
 
         // Use the href attribute first. Fallback to nd-url
         const href = element.getAttribute("href");
-        this.url = href ? href : element.getAttribute("nd-url");
+        this.url = href ? href : element.getAttribute("nd-url") || "";
 
         // Get the interval
-        let interval_ms = element.getAttribute("nd-interval");
-        if (!interval_ms || isNaN(interval_ms)) {
+        const interval = element.getAttribute("nd-interval");
+        let interval_ms: number;
+        if (!interval || isNaN(Number(interval))) {
             interval_ms = POLL_DEFAULT_INTERVAL_MS;
         } else {
-            interval_ms = Number(interval_ms);
+            interval_ms = Number(interval);
             interval_ms = interval_ms < 1000 ? 1000 : interval_ms;
         }
         this.interval_ms = interval_ms;
 
         // Get the target(s)
-        this.targets_selector = element.getAttribute("nd-target");
+        this.targets_selector = element.getAttribute("nd-target") || "";
 
         // Process nd-action
         this.action = has_action ? new Action(element) : null;
@@ -79,7 +89,7 @@ exports.Poll = class Poll {
 
         // Action before fetch
         if (this.action && this.action.when == "before") {
-            this.logger.info(`Executing action 'before::${this.action.name}'`);
+            this.logger.info(`Executing action 'before::${this.action.code}'`);
             this.action.excecute();
         }
 
@@ -95,7 +105,7 @@ exports.Poll = class Poll {
                         this.logger.warn(`Fetching url '${this.url}' returned no data.`, this);
                     }
                     // Action after fetch when data is present
-                    if (this.action && this.action.when == "after") this.action.excecute(data);
+                    if (this.action && this.action.when == "after") this.action.excecute(data ?? undefined);
                 });
             });
         }

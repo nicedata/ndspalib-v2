@@ -1,8 +1,8 @@
 import { Debug } from './debug';
 
 export class Logger {
-    source: string;
-    debug: Debug;
+    private source: string;
+    private debug: Debug;
     constructor(source: string, silent: boolean = false) {
         const name = "Logger";
         this.source = source;

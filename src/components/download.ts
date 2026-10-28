@@ -1,45 +1,44 @@
-const { Logger } = require("../modules/logger.js");
-const { Util } = require("../modules/util.js");
-exports.Download = class Download {
-    constructor(blob, offset, size, out_filename, mimetype, preview = false) {
-        this.logger = new Logger("Download");
+import { Logger } from "../modules/logger";
+import { Util } from "../modules/util";
 
+const logger = new Logger("Download");
+
+export class Download {
+    private href: string;
+    private element!: HTMLElement;
+    private html: string;
+
+    constructor(blob: Blob, offset: number, size: number, out_filename: string, mimetype: string, private preview: boolean = false) {
         const blob_slice = blob.slice(offset, offset + size, mimetype);
-        this.id = crypto.randomUUID(); // Give this instance an ID (UUID) !
         this.href = URL.createObjectURL(blob_slice);
-        this.out_filename = out_filename;
-
         this.preview = preview;
-        this.element = null;
-        this.html = this.preview ? "" : `<a data-nduuid="${this.id}" style="display: none" href="${this.href}", download="${this.out_filename}"></a>`;
-        this.logger.info(this);
+        this.html = this.preview ? "" : `<a style="display: none" href="${this.href}", download="${out_filename}"></a>`;
     }
 
     _cleanup = () => {
-        this.logger.info("Cleanup", this.element ? this.element : "");
+        logger.info("Cleanup", this.element ? this.element : "");
         URL.revokeObjectURL(this.href);
-        if (this.element) this.element.remove();
+        this.element ? this.element.remove() : {};
     };
 
     show = () => {
         if (this.preview) {
-            this.logger.info("Preview mode !");
+            logger.info("Preview mode !");
             window.open(this.href, "_blank");
             this._cleanup();
             return;
         }
 
-        this.logger.info("Download mode !");
+        logger.info("Download mode !");
 
         // Create a fragment
         const fragment = Util.create_fragment(this.html);
 
         // Append to the document
-        Util.insert_fragment(document.body, fragment, true, false);
-        this.element = document.querySelector(`[data-nduuid="${this.id}"]`);
+        this.element = Util.insert_fragment(document.body, fragment, true, false);
 
         // Click to initiate download
-        this.element.click();
+        this.element?.click();
 
         // Remove the link element after 100 msec
         setTimeout(() => {

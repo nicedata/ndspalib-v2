@@ -1,24 +1,31 @@
-const { Logger } = require("./logger.js");
-const { Action } = require("./action.js");
-const { Util } = require("./util.js");
-const { Fetcher } = require("./fetcher.js");
-const { HandlerTracker } = require("../handlers/handler_tracker.js");
-const { Dialog } = require("./dialog.js");
-const { ND_EVENTS } = require("../constants.js");
+import { HandlerTracker } from "../trackers/handler_tracker";
+import { Action } from "./action";
+import { Logger } from "./logger";
+import JSON5 from 'json5';
+import { Util } from "./util";
+import { ND_EVENTS } from "../main/constants";
+import { Fetcher } from "./fetcher";
 
-exports.Link = class Link {
+export class Link {
     static LOGGER = new Logger("Link", true);
+    logger: Logger;
+    dialog: null;
+    url: string;
+    action: Action | null;
+    targets: string;
+    resets: string;
+    dialog_template_id: string;
+    confirm_template_id: string;
 
-    constructor(element) {
+    constructor(public element: Element) {
         this.logger = Link.LOGGER;
-        this.element = element;
-        this.url = null;
+        this.url = '';
         this.dialog = null;
         this.action = null;
-        this.targets = null; // Target selector
-        this.resets = null; // Reset Target selector
-        this.dialog_template_id = null;
-        this.confirm_template_id = null;
+        this.targets = ''; // Target selector
+        this.resets = ''; // Reset Target selector
+        this.dialog_template_id = '';
+        this.confirm_template_id = '';
 
         // Checks
         const has_href = element.hasAttribute("href");
@@ -46,11 +53,11 @@ exports.Link = class Link {
         }
 
         // Change the cursor style !
-        ["A", "BUTTON"].includes(this.element.tagName) ? {} : (this.element.style.cursor = "pointer");
+        ["A", "BUTTON"].includes(this.element.tagName) ? {} : ((this.element as HTMLElement).style.cursor = "pointer");
 
         // Use the href attribute first. Fallback to nd-url
         const href = element.getAttribute("href");
-        this.url = href ? href : element.getAttribute("nd-url");
+        this.url = href || element.getAttribute("nd-url") || '';
 
         // Process nd-action
         this.action = has_action ? new Action(element) : null;
@@ -60,7 +67,7 @@ exports.Link = class Link {
 
         // Process nd-confirm
         if (has_confim) {
-            const template_id = element.getAttribute("nd-confirm");
+            const template_id = element.getAttribute("nd-confirm") || '';
             console.log("Confirm template ID", template_id);
             // Check if the template exists
             const template = document.getElementById(template_id);
@@ -75,7 +82,7 @@ exports.Link = class Link {
         }
 
         if (has_dialog) {
-            const template_id = element.getAttribute("nd-dialog");
+            const template_id = element.getAttribute("nd-dialog") || '';
             console.log("Dialog template ID", template_id);
             // Check if the template exists
             const template = document.getElementById(template_id);
@@ -90,17 +97,17 @@ exports.Link = class Link {
         }
 
         // Get the target(s)
-        this.targets = element.getAttribute("nd-target");
+        this.targets = element.getAttribute("nd-target") || '';
 
         // Get the reset target(s)
-        this.resets = element.getAttribute("nd-reset");
+        this.resets = element.getAttribute("nd-reset") || '';
 
         // Add a tracked 'click' handler
-        handler_tracker.add_listener(element, "click", this.click_handler);
+        handler_tracker.add_listener(element as HTMLElement, "click", this.click_handler);
         this.logger.info(`New Link created (${element.getAttribute("data-ndtrack")}).`);
     }
 
-    click_handler = async (event) => {
+    click_handler = async (event: Event) => {
         event.preventDefault(); // Trap the default (click) handler
         let do_proceed = true;
 
@@ -114,12 +121,12 @@ exports.Link = class Link {
         }
 
         // Evetually run a confirmation dialog
-        this.confirm_template_id ? (do_proceed = (await new Dialog().from_template(this.confirm_template_id).run()) === "accept") : {};
+        // !! this.confirm_template_id ? (do_proceed = (await new Dialog().from_template(this.confirm_template_id).run()) === "accept") : {};
         if (do_proceed) {
             // Action before fetch
             if (this.action && this.action.when == "before") this.action.excecute();
 
-            this.dialog_template_id ? new Dialog().from_template(this.dialog_template_id).show() : {};
+            // ! this.dialog_template_id ? new Dialog().from_template(this.dialog_template_id).show() : {};
 
             // Reset targets if any
             Util.get_targets(this.resets).forEach((element) => {
@@ -135,7 +142,7 @@ exports.Link = class Link {
                         if (data) {
                             Util.get_targets(this.targets).forEach((t) => {
                                 if (t.tagName === "INPUT") {
-                                    t.value = data;
+                                    (t as HTMLInputElement).value = data;
                                 } else {
                                     const fragment = Util.create_fragment(data);
                                     // Replace target fragment and refresh it
@@ -144,22 +151,22 @@ exports.Link = class Link {
                             });
                         }
                         // Action after fetch when data is present
-                        if (this.action && this.action.when == "after") this.action.excecute(data);
+                        if (this.action && this.action.when == "after") this.action.excecute(data ?? undefined);
                     });
             }
         }
     };
 
-    static create_link = (element, url) => {
+    static create_link = (element: Element, url: string) => {
         element.setAttribute("nd-link", "");
         element.setAttribute("nd-url", url);
         return new Link(element);
     };
 
-    static clear_link = (element) => {
+    static clear_link = (element: Element) => {
         element.removeAttribute("nd-link");
         element.removeAttribute("nd-url");
         element.removeAttribute("data-ndtrack");
-        element.style.cursor = "";
+        (element as HTMLElement).style.cursor = "";
     };
 };

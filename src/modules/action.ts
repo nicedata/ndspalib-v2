@@ -8,9 +8,13 @@
  */
 import { Logger } from "./logger";
 import { Util } from "./util";
+import JSON5 from 'json5';
 
 // Allowed action modifiers
 const ACTION_MODIFIERS = ["before", "after"];
+
+const LOGGER = new Logger("Action", true);
+const noop = () => { };
 
 /**
  * Class representing the details of an action, including when to execute, the URL to fetch, source element, target elements, and data.
@@ -18,8 +22,8 @@ const ACTION_MODIFIERS = ["before", "after"];
 class ActionDetail {
     when: string | null = null;
     url: string | null = null;
-    source: HTMLElement | null = null;
-    targets: HTMLElement[] = [];
+    source: Element | null = null;
+    targets: Element[] = [];
     str_data: string = '';
     json_data: object = {};
 }
@@ -36,18 +40,17 @@ class ActionDetail {
  *
  */
 export class Action {
-    static LOGGER = new Logger("Action", true);
     logger: Logger;
     code: string | null;
     when: string | null;
-    action: Function | null;
+    action: Function;
     details: ActionDetail;
 
-    constructor(element: HTMLElement) {
-        this.logger = Action.LOGGER; // Use the static logger for all instances of Action
+    constructor(element: Element) {
+        this.logger = LOGGER; // Use the static logger for all instances of Action
         this.code = null; // The JavaScript code as string
         this.when = null; // When to execute the action: "before" or "after"
-        this.action = null; // The function created from the code string
+        this.action = noop; // The function created from the code string
         this.details = new ActionDetail(); // An instance of ActionDetail to hold the details of the action
 
         // Get the action code and details from the element's attributes
@@ -64,7 +67,7 @@ export class Action {
 
         // Target elements to inform about the action
         const selector = element.getAttribute("nd-target");
-        this.details.targets = Util.get_targets(selector);
+        this.details.targets = selector ? Util.get_targets(selector) : [];
 
         // Determine when to execute the action and extract the code
         if (action.includes("::")) {
@@ -90,21 +93,20 @@ export class Action {
     }
 
     // Method to set target elements after the action has been created, allowing for dynamic updates to the targets.
-    set_targets = (targets) => {
+    set_targets = (targets: Element[]) => {
         this.details.targets = targets;
     };
 
     // Method to execute the action function with the provided data and log the execution.
-    excecute = (data = null) => {
-        this.logger.info(`Executing ${this.code}, ${this.when} fetch.`);
+    excecute = (data: string = '') => {
+        this.logger.info(`Executing '${this.code}', ${this.when} fetch.`);
         this.details.str_data = data;
 
         // Try to parse the data as JSON. If parsing fails, set json_data to null.
         try {
             this.details.json_data = JSON5.parse(data);
-        } catch (error) {
-            this.details.json_data = null;
-        }
+        } catch (e) { }
+
 
         // Call the action function with the action details.
         // The function can use the details to perform its logic, such as updating target elements or processing the fetched data.

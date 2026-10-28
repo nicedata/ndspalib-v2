@@ -16,23 +16,18 @@
  *    nd-load :     Executes a 'click' immediately (loads the data from the URL)
  */
 
-const { BaseHandler } = require("./base_handler.js");
-const { Link } = require("../modules/link.js");
+import { Link } from "../modules/link";
+import { AbstractProcessor } from "./abstract_processor";
 
-exports.LinkHandler = class LinkHandler extends BaseHandler {
+export class LinkProcessor extends AbstractProcessor {
     constructor() {
-        super("LinkHandler");
-        // Singleton
-        if (!!LinkHandler._instance) {
-            return LinkHandler._instance;
-        }
-        LinkHandler._instance = this;
+        super();
     }
 
     /**
      * Process a given fragment.
      */
-    process = (fragment) => {
+    process = (fragment: Element) => {
         // If there are no links, do nothing
         if (fragment.querySelectorAll("[nd-link]").length === 0) return;
 
@@ -48,5 +43,5 @@ exports.LinkHandler = class LinkHandler extends BaseHandler {
     /**
      * Clean the DOM (remove unused handlers)
      */
-    postprocess = () => {};
+    postprocess = () => { };
 };

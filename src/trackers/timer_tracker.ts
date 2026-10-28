@@ -7,6 +7,9 @@
  */
 
 import { BaseTracker } from "./base_tracker";
+import { Util } from "../modules/util";
+import { AbstractProcessor } from "../processors/abstract_processor";
+import { Logger } from "../modules";
 
 /**
  * TrackedTimer class to represent a timer associated with an element in the DOM.
@@ -18,7 +21,7 @@ class TrackedTimer {
     uuid: string;
 
     constructor(element: HTMLElement, timer_id: number, timeout_ms: number) {
-        this.uuid = element.dataset.ndtimer ?? crypto.randomUUID();
+        this.uuid = element.dataset.ndtimer ?? Util.randomUUID();
         element.dataset.ndtimer = this.uuid;
         this.timer_id = timer_id; // The ID of the timer returned by setTimeout or setInterval
         this.timeout_ms = timeout_ms; // The timeout duration in milliseconds (optional)
@@ -33,17 +36,13 @@ class TrackedTimer {
  * @class TimerTracker
  * @extends BaseHandler
  */
-export class TimerTracker extends BaseTracker {
-    static _instance: TimerTracker;
-    timers: TrackedTimer[] = [];
+export class TimerTracker extends AbstractProcessor {
+    private timers: TrackedTimer[] = [];
     constructor() {
-        // Singleton !
-        if (!!TimerTracker._instance) {
-            return TimerTracker._instance;
-        }
-        super('TimerTracker');
-        TimerTracker._instance = this;
+        super();
     }
+
+    process = (fragment: Element) => { };
 
     /**
      * Postprocess method to clean up timers associated with elements that are no longer in the DOM.
@@ -71,10 +70,12 @@ export class TimerTracker extends BaseTracker {
      * @param {number} timeout_ms - The timeout duration in milliseconds (optional).
      * @returns {void}
      */
-    register_timer = (element: HTMLElement, timer_id: number, timeout_ms: number) => {
-        const tracked_item = new TrackedTimer(element, timer_id, timeout_ms);
+    register_timer = (element: Element, timer_id: number, timeout_ms: number) => {
+        const _element = element as HTMLElement;
+        const tracked_item = new TrackedTimer(_element, timer_id, timeout_ms);
         this.timers.push(tracked_item);
-        this.logger.info(`Now tracking timer '${timer_id}' (${timeout_ms}ms) on element '${element.tagName.toLowerCase()}' (${element.dataset.ndtimer}). Total timer(s): ${this.timers.length}.`);
+        this.logger.info(`Now tracking timer '${timer_id}' (${timeout_ms}ms) on element '${_element.tagName.toLowerCase()}' (${_element.dataset.ndtimer}).`);
+        this.logger.info(`Total timer(s): ${this.timers.length}.`);
     };
 
     /**
@@ -90,7 +91,8 @@ export class TimerTracker extends BaseTracker {
             clearTimeout(tracked_item.timer_id);
             const index = this.timers.indexOf(tracked_item);
             this.timers.splice(index, 1);
-            this.logger.info(`Cleared and removed timer #${tracked_item.timer_id} (${tracked_item.timeout_ms}ms) for element ${tracked_item.uuid}. ${this.timers.length} timer(s) remaining.`);
+            this.logger.info(`Cleared and removed timer #${tracked_item.timer_id} (${tracked_item.timeout_ms}ms) on element ${tracked_item.uuid}.`);
+            this.logger.info(`Timer(s) remaining: ${this.timers.length}.`);
         } else {
             this.logger.warn(`Timer with nduuid=${uuid} not found.`);
         }

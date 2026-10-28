@@ -4,19 +4,12 @@ import { AbstractProcessor } from "./abstract_processor";
 import type { KeyValuePair } from "../main/types";
 
 
-export class EnvironmentHandler extends AbstractProcessor {
-    static _instance: EnvironmentHandler;
-    envs: KeyValuePair<string, any>[] = []; // The current environments list of {key, value}
+export class EnvironmentProcessor extends AbstractProcessor {
+    private envs: KeyValuePair<string, any>[] = []; // The current environments list of {key, value}
 
     constructor() {
-        // Singleton
-        if (!!EnvironmentHandler._instance) {
-            return EnvironmentHandler._instance;
-        }
         super();
-        EnvironmentHandler._instance = this;
-
-        this.envs = []; // The current environments list of {key, value}
+        // this.envs = []; // The current environments list of {key, value}
 
 
         // Add an event listeners

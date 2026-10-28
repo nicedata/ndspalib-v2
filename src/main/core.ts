@@ -7,17 +7,30 @@ import { BaseTracker } from "../trackers/base_tracker";
 import { HandlerTracker } from "../trackers/handler_tracker";
 import { TimerTracker } from "../trackers/timer_tracker";
 import { INFOS } from "./constants";
+import { Util } from "../modules/util";
+import { AlertSeverity } from "./types";
+import { Alert } from "../components/notifications/alert";
+import { Toast } from "../components/notifications/toast";
 
 export class Core {
-    static _instance: Core;
+    private static _instance: Core;
 
     logger: Logger = new Logger("Core", true);
     version: string = `${INFOS.PROGNAME} ${INFOS.VERSION}`;
     fetcher: Fetcher = new Fetcher();
     debug: Debug = new Debug();
+    util: Util = Util;
     handlers: AbstractProcessor[] = [];
-    trackers: BaseTracker[] = [new TimerTracker(), new HandlerTracker()];
+    trackers: BaseTracker[] = [];
     main_container!: Element;
+
+    alert = (severity: AlertSeverity, message: string) => {
+        new Alert(severity, message).render();
+    };
+
+    toast = (title: string, message: string) => {
+        new Toast(title, message).render();
+    };
 
     constructor() {
         // Singleton pattern
@@ -30,8 +43,8 @@ export class Core {
     };
 
     set_main_container: () => void = () => {
-        const nd_init = document.querySelector("[nd-main]");
-        nd_init ? (this.main_container = nd_init) : this.logger.warn(`No 'nd-init' element found in the document !`);
+        const nd_main = document.querySelector("[nd-main]");
+        nd_main ? (this.main_container = nd_main) : this.logger.warn(`No 'nd-main' element found in the document !`);
     };
 
 
@@ -41,10 +54,4 @@ export class Core {
         });
 
     };
-
-    // export const core_init = (): Promise<Core> => {
-    //     return new Promise((resolve) => {
-    //         resolve(new Core());
-    //     });
-    // };
 }

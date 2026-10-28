@@ -8,8 +8,10 @@
  * It provides a postprocess method that should be called after each DOM update to remove event listeners from elements that are no longer in the DOM.
  * It also provides an add_listener method to add event listeners to elements and track them.
  */
+import { Logger } from "../modules";
 import { Util } from "../modules/util";
-import { BaseTracker } from "./base_tracker";
+import { AbstractProcessor } from "../processors/abstract_processor";
+
 
 /**
  * A TrackedItem is a structure to keep track of an event handler.
@@ -34,17 +36,14 @@ class TrackedItem {
 /**
  * HandlerTracker is a singleton class that keeps track of event handlers added to elements in the DOM.
  */
-export class HandlerTracker extends BaseTracker {
-    static _instance: HandlerTracker;
-    tracked_handlers: TrackedItem[] = []; // A list of TrackedItems
+export class HandlerTracker extends AbstractProcessor {
+    private tracked_handlers: TrackedItem[] = []; // A list of TrackedItems
     constructor() {
-        // Singleton !
-        if (!!HandlerTracker._instance) {
-            return HandlerTracker._instance;
-        }
-        super('HandlerTracker');
-        HandlerTracker._instance = this;
+        super();
     }
+
+    process = (fragment: Element): void => { };
+
 
     /**
      * Postprocess method to be called after each DOM update to remove event listeners from elements that are no longer in the DOM.
@@ -81,7 +80,8 @@ export class HandlerTracker extends BaseTracker {
             this.tracked_handlers.splice(index, 1);
             deleted_count++;
         });
-        this.logger.info(`Postprocessing : ${deleted_count} handler(s) removed. ${this.tracked_handlers.length} handlers(s) kept.`);
+        this.logger.info(`Postprocessing : ${deleted_count} handler(s) removed.`);
+        this.logger.info(`Handler(s) remaining : ${this.tracked_handlers.length}.`);
     };
 
     /**
@@ -101,7 +101,8 @@ export class HandlerTracker extends BaseTracker {
         weakref.deref()?.addEventListener(event, handler, use_capture);
         const tracked_item = new TrackedItem(weakref, trackid, event, handler, use_capture);
         this.tracked_handlers.push(tracked_item);
-        this.logger.info(`Tracking '${event}' handler on element '${element.tagName.toLowerCase()}' (${trackid}). Total handler(s): ${this.tracked_handlers.length}.`);
+        this.logger.info(`Tracking '${event}' handler on element '${element.tagName.toLowerCase()}' (${trackid}).`);
+        this.logger.info(`Total handler(s): ${this.tracked_handlers.length}.`);
     };
 };
 

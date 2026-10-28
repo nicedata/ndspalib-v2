@@ -14,12 +14,15 @@ export const _INFOS = {
     },
 };
 
+
+
 // Overlay modes
-export const OVERLAY_MODE = {
-    NONE: 0,
-    MODAL: 1, // Modal dialogs
-    TRANSIENT: 2, // Alerts, toasts, ....
+export enum OVERLAY_MODE {
+    NONE,
+    MODAL, // Modal dialogs
+    TRANSIENT, // Alerts, toasts, ....
 };
+
 
 export const INFOS = _INFOS;
 export const PROGNAME = `${INFOS.PROGNAME} ${INFOS.VERSION}`;
@@ -178,17 +181,20 @@ export const ND_STYLES = `
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.1);
+        /*
         border-radius: var(--nd-border-radius);
         border-color: var(--nd-border-color);
+        */
         z-index: 8000;
         cursor: not-allowed;
-        display: none;
+        /* display: block; */
+        border: none;
     }
 
     .nd-modal-content {
         position: relative;
         left: 50%;
-        width: 50%;
+        width: 30%;
         transform: translate(-50%, 0%);
 
         height: fit-content;
@@ -199,6 +205,7 @@ export const ND_STYLES = `
         border: var(--nd-border-color);
         border-radius: var(--nd-border-radius);
         cursor: auto;
+        box-shadow: 8.0px 16.0px 16.0px hsl(0deg 0% 0% / 0.25);
     }
 
     .nd-notification {
@@ -208,14 +215,18 @@ export const ND_STYLES = `
         width: 60%;
         transform: translate(-50%, 0%);
 
-        margin-top: 5px;
+       margin-top: 5px;
 
         border: transparent solid 1px;
         border-radius: var(--nd-border-radius);
         padding-right: 10px;
         background-color: white;
         z-index: 10000;
-        display: none;
+
+        display: block; 
+        width: 40%;
+
+        box-shadow: 8.0px 16.0px 16.0px hsl(0deg 0% 0% / 0.25);
     }
 
     .nd-close {
@@ -262,7 +273,8 @@ export const ND_STYLES = `
         padding-right: 10px;
         background-color: white;
         z-index: 10000;
-        display: none;
+        display: block;
+        box-shadow: 8.0px 16.0px 16.0px hsl(0deg 0% 0% / 0.25);
     }
 
     .nd-toast-header {

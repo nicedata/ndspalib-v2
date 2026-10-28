@@ -1,13 +1,50 @@
 import { ND_EVENTS, CONTAINERS, OVERLAY_MODE } from "../main/constants";
+import { check_fragment } from "../syntax/syntax";
 import { Logger } from "./logger";
 import { v4 as uuidv4 } from 'uuid';
+import JSON5 from 'json5';
 
+const logger = new Logger("Util", true);
 
 export class Util {
-    static logger = new Logger("Util", true);
 
     static randomUUID = (): string => {
         return uuidv4();
+    };
+
+
+    static to_json = (data: string): object => {
+        let result: object = {};
+        try {
+            result = JSON5.parse(data);
+        } catch (error) {
+            logger.error(`Error: no valid json data supplied: '${data}'. Please see https://json5.org/.`);
+        } finally {
+            return result;
+        }
+    };
+
+    static is_internal_url = (href: string): boolean => {
+        // Élimine les chaînes vides, les ancres pures et les liens javascript/téléphone/mail
+        if (!href || href.startsWith('#') || /^(javascript|mailto|tel):/i.test(href)) {
+            return true;
+        }
+
+        try {
+            // Utilise window.location.origin comme base pour résoudre automatiquement les liens relatifs
+            const targetUrl = new URL(href, window.location.origin);
+
+            // Compare l'origine (protocole + domaine + port)
+            return targetUrl.origin === window.location.origin;
+        } catch (error) {
+            // Si l'URL ne peut pas être analysée, on considère par sécurité qu'elle n'est pas interne
+            return false;
+        }
+    };
+
+    static is_root_url = (url: string) => {
+        const _url = url.trim();
+        return _url === '/';
     };
 
     // Source - https://stackoverflow.com/questions/42406520/populate-an-html-form-from-a-formdata-object
@@ -69,7 +106,7 @@ export class Util {
      *
      *  @return: an array of elements matching the selector, or an array with the element (ifempty) if querySelectorAll returns nothing.
      */
-    static get_targets = (selector: string, ifempty = null): HTMLElement[] => {
+    static get_targets = (selector: string, ifempty: Element | null = null): Element[] => {
         // Check selector (must be a string)
         if (typeof selector !== "string") return ifempty ? [ifempty] : [];
 
@@ -77,7 +114,7 @@ export class Util {
         selector = selector.trim().replace(/\s+/g, " ").split(" ").join(",");
 
         // Get the elements, eventually add the element (ifempty) if querySelectorAll returns nothing
-        return selector ? Array.from(document.querySelectorAll<HTMLElement>(selector)) : ifempty ? [ifempty] : [];
+        return selector ? Array.from(document.querySelectorAll(selector)) : ifempty ? [ifempty] : [];
     };
 
     /**
@@ -87,7 +124,7 @@ export class Util {
      *  @return: nothing, the function modifies the node in place.
      */
     static clear_node = (node: Node) => {
-        Util.logger.info(`clear_node | node name: '${node.nodeName.toLowerCase()}'`);
+        logger.info(`clear_node | node name: '${node.nodeName.toLowerCase()}'`);
         const range = document.createRange();
         range.selectNodeContents(node);
         range.deleteContents();
@@ -97,18 +134,22 @@ export class Util {
      * create_fragment - create a document fragment from HTML code.
      */
     static create_fragment(html: string): DocumentFragment {
-        Util.logger.info(`create_fragment | Content: '${html ? Util.truncate(html) : ""}'`);
+        logger.info(`create_fragment | Content: '${html ? Util.truncate(html) : ""}'`);
         return document.createRange().createContextualFragment(html);
     }
 
     static refresh(fragment: Element) {
         // Step 1 : process the fragment (update handlers)
         for (const [_, handler] of Object.entries(nd_core.handlers)) {
+            logger.info(`Process by ${handler.constructor.name}`);
             handler.process(fragment);
         }
 
+        check_fragment(fragment);
+
         // Step 2 : postprocess the (update handlers)
         for (const [_, handler] of Object.entries(nd_core.handlers)) {
+            logger.info(`Postprocess by ${handler.constructor.name}`);
             handler.postprocess();
         }
 
@@ -139,8 +180,8 @@ export class Util {
      *
      * @return: nothing, the function modifies the DOM in place.
      */
-    static insert_fragment = (target: Element, fragment: DocumentFragment, append = false, refresh = false, new_layer = false) => {
-        Util.logger.info(`insert_fragment | Target: '${target.tagName.toLowerCase()}'. Mode: ${append ? "append" : "replace"}. Refresh: ${refresh ? "yes" : "no"}.`);
+    static insert_fragment = (target: Element, fragment: DocumentFragment, append = false, refresh = false, new_layer = false): HTMLElement => {
+        logger.info(`insert_fragment | Target: '${target.tagName.toLowerCase()}'. Mode: ${append ? "append" : "replace"}. Refresh: ${refresh ? "yes" : "no"}.`);
 
         document.dispatchEvent(new CustomEvent(ND_EVENTS.FRAGMENT_BEFORE_INSERT, { detail: { target: target, fragment: fragment, append: append } }));
         // If append mode is false, clear the node before
@@ -148,7 +189,7 @@ export class Util {
 
         // See : https://www.miragecraft.com/blog/dynamically-insert-inline-script
         target.appendChild(fragment);
-        const result = target.lastChild;
+        const result = target.lastChild as HTMLElement;
 
         // No global refresh on new layers !
         if (new_layer) return result;
@@ -163,7 +204,7 @@ export class Util {
      * sleep_ms - sleep during a specific period (ms).
      */
     static async sleep_ms(ms: number) {
-        Util.logger.info(`sleep_ms | Timeout: ${ms}ms.`);
+        logger.info(`sleep_ms | Timeout: ${ms}ms.`);
         await new Promise((resolve) => setTimeout(resolve, ms));
     }
 
@@ -172,7 +213,7 @@ export class Util {
      */
     static compress(str: string) {
         if (typeof str !== "string") return str;
-        Util.logger.info(`compress | String: '${Util.truncate(str)}'.`);
+        logger.info(`compress | String: '${Util.truncate(str)}'.`);
         return str.replace(/\n+/g, " ").replace(/\r+/g, " ").replace(/  +/g, " ");
     }
 
@@ -183,7 +224,7 @@ export class Util {
             method = parsed_method ?? "";
             url = parsed_url ?? "";
             if (!["get", "post"].includes(method)) {
-                Util.logger.error(`Only 'get::' or 'post::' url modifiers are allowed. Supplied method was '${method}:'.`);
+                logger.error(`Only 'get::' or 'post::' url modifiers are allowed. Supplied method was '${method}:'.`);
                 return;
             }
         } else {
@@ -192,7 +233,7 @@ export class Util {
 
         // Get or Post...
         if (["get", "post"].includes(method)) {
-            Util.logger.info(`Fetching url '${url} with a '${method}' request.`);
+            logger.info(`Fetching url '${url} with a '${method}' request.`);
             const request = new Request(url, { method: method.toUpperCase() });
             await nd_core.fetcher.execute_fetch(request);
             return;
@@ -209,28 +250,29 @@ export class Util {
                 return;
             }
         });
-        Util.logger.warn(`navigate_to | Url: '${new_url}'. Link: ${result ? "found" : "not found"}.`);
+        logger.warn(`navigate_to | Url: '${new_url}'. Link: ${result ? "found" : "not found"}.`);
         return result;
     };
 
-    static open_layer = (html: string, mode: typeof OVERLAY_MODE[keyof typeof OVERLAY_MODE]) => {
+    static open_layer = (html: string, mode: typeof OVERLAY_MODE[keyof typeof OVERLAY_MODE]): HTMLElement | null => {
         let container = null;
         const fragment = Util.create_fragment(html);
 
         // Get the DOM target
         switch (mode) {
             case OVERLAY_MODE.MODAL:
-                container = document.querySelector<HTMLElement>(`[${CONTAINERS.DIALOGS}]`);
+                container = document.querySelector(`[${CONTAINERS.DIALOGS}]`);
                 break;
             case OVERLAY_MODE.TRANSIENT:
-                container = document.querySelector<HTMLElement>(`[${CONTAINERS.NOTIFICATIONS}]`);
+                container = document.querySelector(`[${CONTAINERS.NOTIFICATIONS}]`);
                 break;
             default:
-                this.logger.error(`Unknown layer mode : '${mode}'.`);
-                return;
+                logger.error(`Unknown layer mode : '${mode}'.`);
+                return null;
         }
 
-        if (!container) return;
+        if (!container)
+            return null;
 
         // Insert the new fragment (append AND refresh)
         const new_element = Util.insert_fragment(container, fragment, true, true, true);

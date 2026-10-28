@@ -1,20 +1,20 @@
-import { CONTAINERS, ND_STYLES, PROGNAME } from "../main/constants";
+import { CONTAINERS, ND_STYLES, PROGNAME } from "./constants";
 import { Core } from "./core";
 import { Util } from "../modules/util";
 import { SourceProcessor } from "../processors/source_processor";
-import { EnvironmentHandler } from "../processors/environment_handler";
+import { EnvironmentProcessor } from "../processors/environment_processor";
 import { Logger } from "../modules";
-import { check_fragment } from "./syntax";
+import { check_fragment } from "../syntax/syntax";
+import { PollProcessor } from "../processors/poll_processor";
+import { TimerTracker } from "../trackers/timer_tracker";
+import { HandlerTracker } from "../trackers/handler_tracker";
+import { VersionHandler } from "../processors/version_handler";
+import { NavProcessor } from "../processors/nav_processor";
+import { TestProcessor } from "../processors/test_processor";
 
 declare global {
     var nd_core: Core;
 }
-
-
-
-
-
-
 
 /**
  * Initialize the document with required elements and styles.
@@ -30,9 +30,6 @@ const initialize_document = () => {
     document.querySelector("body")?.firstElementChild?.before(fragment);
 };
 
-
-
-
 console.info(`INFO | Core | ${PROGNAME} : initializing...`);
 Core.init().then((core: Core) => {
     nd_core = core;
@@ -44,7 +41,15 @@ const on_dom_loaded = (): void => {
     nd_core.set_main_container();
     console.info(`INFO | Core | ${PROGNAME} : ready !`);
     check_fragment(document.body);
-    nd_core.handlers = [new SourceProcessor()];
+    nd_core.handlers = [
+        SourceProcessor.getInstance(),
+        PollProcessor.getInstance(),
+        TimerTracker.getInstance(),
+        HandlerTracker.getInstance(),
+        VersionHandler.getInstance(),
+        NavProcessor.getInstance(),
+        TestProcessor.getInstance(),
+    ];
     Util.refresh(document.body);
 };
 
