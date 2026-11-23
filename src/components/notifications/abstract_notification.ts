@@ -14,6 +14,8 @@ export abstract class AbstractNotification {
     private dialog_instance!: HTMLDialogElement;
     private close_btn!: HTMLElement;
 
+    protected constructor() { }
+
     private on_close_handler = (): void => {
         this.close_btn?.removeEventListener("click", this.on_close_handler);
         this.dialog_instance.remove();
@@ -26,7 +28,7 @@ export abstract class AbstractNotification {
         this.dialog_instance = Util.open_layer(this.html, OVERLAY_MODE.TRANSIENT) as HTMLDialogElement;
 
         // Get the close element (nd-close)
-        this.close_btn = this.dialog_instance.querySelector("[nd-close]") as HTMLElement;
+        this.close_btn = this.dialog_instance.querySelector("[data-close]") as HTMLElement;
         this.close_btn?.addEventListener("click", this.on_close_handler);
 
         // Automatically close after a given delay

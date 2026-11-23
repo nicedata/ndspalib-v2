@@ -1,5 +1,5 @@
 import { KVPair } from "../main/types";
-import { PARAMETER } from "../syntax/syntax";
+import { PARAMETERS } from "../syntax/syntax";
 import { Logger } from "./logger";
 import { Util } from "./util";
 
@@ -9,8 +9,10 @@ export class Parameter {
     private data: Record<string, any> = {};
 
     constructor(private element: Element) {
-        const data = (element.getAttribute(PARAMETER.PARAMS.name) || '').trim();
+        const data = (element.getAttribute(PARAMETERS.PARAMS.name) || '').trim();
         this.data = data ? Util.to_json(data) : {};
+        // Cleanup
+        for (const key in this.data) { this.data[key] = this.data[key].trim(); };
     }
 
     get = (key: string, deflt: any = null): any => {

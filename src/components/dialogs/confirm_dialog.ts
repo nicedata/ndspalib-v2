@@ -1,5 +1,6 @@
 import { AbstractDialog } from "./abstract_dialog";
 import { DialogResult } from "../../main/types";
+import { Fetcher } from "../../modules/fetcher";
 
 const HTML_TEMPLATE = `
 <dialog id="$id" class="nd-modal" role="document">
@@ -7,8 +8,8 @@ const HTML_TEMPLATE = `
         <h5 class="nd-header">$title</h5>
         <div class="mb-1">$message</div>
         <div class="nd-footer">
-            <button nd-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
-            <button nd-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
+            <button data-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
+            <button data-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
         </div>
     </div>
 </dialog>`;
@@ -18,6 +19,7 @@ const DEFAULTS: Record<string, string> = {
     message: 'Confirm message (unset)',
     accept_label: '?Confirm',
     dismiss_label: '?Dismiss',
+    dismiss_url: '',
 };
 
 export class DlgConfirm extends AbstractDialog {
@@ -35,6 +37,7 @@ export class DlgConfirm extends AbstractDialog {
 
     private accept_handler = (e: Event) => {
         this.return_value = DialogResult.ACCEPT;
+        this.dismiss_url = undefined;
         this.close();
     };
 
@@ -44,8 +47,8 @@ export class DlgConfirm extends AbstractDialog {
     };
 
     attach_event_handlers = (): void => {
-        this.accept_btn = this.dialog_instance?.querySelector('[nd-accept]') as HTMLButtonElement;
-        this.dismiss_btn = this.dialog_instance?.querySelector('[nd-dismiss]') as HTMLButtonElement;
+        this.accept_btn = this.dialog_instance?.querySelector('[data-accept]') as HTMLButtonElement;
+        this.dismiss_btn = this.dialog_instance?.querySelector('[data-dismiss]') as HTMLButtonElement;
         this.accept_btn?.addEventListener('click', this.accept_handler);
         this.dismiss_btn?.addEventListener('click', this.dismiss_handler);
     };
@@ -55,6 +58,8 @@ export class DlgConfirm extends AbstractDialog {
         this.accept_btn?.removeEventListener('click', this.accept_handler);
         this.dismiss_btn?.removeEventListener('click', this.dismiss_handler);
         this.dialog_instance?.remove();
+
+        this.dismiss_url ? Fetcher.get().redirect_to(this.dismiss_url) : {};
     };
 
 }

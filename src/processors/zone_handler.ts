@@ -17,9 +17,9 @@ exports.ZoneHandler = class ZoneHandler extends BaseHandler {
         document.addEventListener(ND_EVENTS.ZONE, this._zone_event_handler);
     }
 
-    process = (fragment) => {};
+    process = (fragment) => { };
 
-    postprocess = () => {};
+    postprocess = () => { };
 
     _set_focus = (zone) => {
         const element = zone.querySelector("[autofocus]");

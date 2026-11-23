@@ -1397,11 +1397,11 @@ var nd_core = (() => {
             return final;
           }
         };
-        var JSON55 = {
+        var JSON56 = {
           parse,
           stringify
         };
-        var lib = JSON55;
+        var lib = JSON56;
         var es5 = lib;
         return es5;
       });
@@ -1413,14 +1413,30 @@ var nd_core = (() => {
     PROGNAME: "NDS SPA utilities",
     VERSION: "1.0.17-dev",
     AUTHOR: "Martin Mohnhaupt <martin.mohnhaupt@etik.com>",
+    COMPANY: "Nice Data Systems, https://www.nicedata.ch",
     LICENCE: "MIT License, https://mit-license.org/",
     INSPIREDBY: {
       HTMX: "HTMX : https://htmx.org/",
       UNPOLY: "UNPOLY : https://unpoly.com/"
     }
   };
-  var INFOS = _INFOS;
-  var PROGNAME = `${INFOS.PROGNAME} ${INFOS.VERSION}`;
+  var BANNER = `
+ \u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+\u2591\u2591\u2588\u2588\u2588\u2588\u2588\u2588 \u2591\u2591\u2588\u2588\u2588 \u2591\u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2588\u2588\u2588  \u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588\u2591\u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588  \u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588 \u2591\u2591\u2588\u2588\u2588       \u2591\u2591\u2588\u2588\u2588 \u2591\u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588
+ \u2591\u2588\u2588\u2588\u2591\u2588\u2588\u2588 \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588   \u2591\u2591\u2588\u2588\u2588\u2591\u2588\u2588\u2588    \u2591\u2591\u2591  \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588 \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588        \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588
+ \u2591\u2588\u2588\u2588\u2591\u2591\u2588\u2588\u2588\u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588\u2591\u2591\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2591\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2591\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2591\u2588\u2588\u2588        \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+ \u2591\u2588\u2588\u2588 \u2591\u2591\u2588\u2588\u2588\u2588\u2588\u2588  \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588 \u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588 \u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591   \u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588        \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2588\u2588\u2588
+ \u2591\u2588\u2588\u2588  \u2591\u2591\u2588\u2588\u2588\u2588\u2588  \u2591\u2588\u2588\u2588    \u2588\u2588\u2588  \u2588\u2588\u2588    \u2591\u2588\u2588\u2588 \u2591\u2588\u2588\u2588         \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588      \u2588 \u2591\u2588\u2588\u2588  \u2591\u2588\u2588\u2588    \u2591\u2588\u2588\u2588
+ \u2588\u2588\u2588\u2588\u2588  \u2591\u2591\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2591\u2591\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+ 
+ A library that makes it easy to develop single-page web applications.
+ 
+ Copyright : ${_INFOS.AUTHOR} 
+ Company   : ${_INFOS.COMPANY}  
+ License   : ${_INFOS.LICENCE}
+ Version   : ${_INFOS.VERSION}
+`;
+  var PROGNAME = `${_INFOS.PROGNAME} ${_INFOS.VERSION}`;
   var VERSION = _INFOS.VERSION;
   var ND_EVENTS = {
     // Core events
@@ -1454,11 +1470,7 @@ var nd_core = (() => {
     ITEM: "nd:item",
     SORT: "nd:sort"
   };
-  var CONTAINERS = {
-    DIALOGS: "nd-dialog-container",
-    NOTIFICATIONS: "nd-notification-container",
-    BUSY: "nd-busy-container"
-  };
+  var NO_CONTEXT = "::none::";
   var TOAST_DELAY_MS = 3e3;
   var POLL_DEFAULT_INTERVAL_MS = 1e4;
   var ND_STYLES = `
@@ -1467,7 +1479,7 @@ var nd_core = (() => {
         --nd-border-color: lightgray solid 1px;
     }
 
-    [nd-notification-container] {
+    .nd-notifications {
         position: absolute;
         left: 50%;
         top: 0;
@@ -1478,7 +1490,7 @@ var nd_core = (() => {
         z-index: 9000;
     }
 
-    [nd-busy-container] {
+    .nd-busy {
         position: fixed;
         top: 0;
         left: 0;
@@ -1492,7 +1504,7 @@ var nd_core = (() => {
         cursor: progress;
     }  
 
-    [nd-spinner] {
+    .nd-spinner {
         display: block;
         position: absolute;
         z-index: 1000;
@@ -1742,364 +1754,179 @@ var nd_core = (() => {
     }
   };
 
-  // src/processors/environment_processor.ts
-  var import_json5 = __toESM(require_dist());
-
-  // src/processors/abstract_processor.ts
-  var AbstractProcessor = class _AbstractProcessor {
-    // Stockage des instances par classe concrète
-    static instances = /* @__PURE__ */ new Map();
-    logger;
-    constructor() {
-      this.logger = new Logger(this.constructor.name.replace("_", ""), false);
-    }
-    static getInstance() {
-      if (!_AbstractProcessor.instances.has(this)) {
-        _AbstractProcessor.instances.set(this, new this());
-      }
-      return _AbstractProcessor.instances.get(this);
-    }
-  };
-
-  // src/processors/environment_processor.ts
-  var EnvironmentProcessor = class extends AbstractProcessor {
-    envs = [];
-    // The current environments list of {key, value}
-    constructor() {
-      super();
-      this.logger.info(`Adding a listener to handle '${ND_EVENTS.ENVIRONMENT}' events.`);
-      document.addEventListener(ND_EVENTS.ENVIRONMENT, this.event_handler);
-      Object.preventExtensions(this);
-    }
-    get_environment = () => {
-      return this.envs;
-    };
-    update_document = () => {
-      this.logger.info(`Updating document. Environment: ${import_json5.default.stringify(this.envs)}.`);
-      document.querySelectorAll("[nd-env]").forEach((e) => {
-        const key = e.getAttribute("nd-env");
-        if (!key) {
-          this.logger.error(`No key specified in element`, e);
-          return;
-        }
-        let result = "";
-        if (key === "*" && this.envs.length > 0) {
-          const env_list = [];
-          this.envs.forEach((e2) => {
-            env_list.push(`${e2.key}=${e2.value}`);
-          });
-          result = env_list.join(", ");
-        } else {
-          const item = this.envs.find((env) => env.key === key);
-          result = item ? item.value : "";
-        }
-        result ? e.innerHTML = result : {};
-      });
-    };
-    process = (fragment) => {
-    };
-    postprocess = () => {
-      this.update_document();
-    };
-    event_handler = (event) => {
-      this.logger.info(`Event: ${event.type}. Data: '${import_json5.default.stringify(event.detail)}'.`);
-      const data = event.detail;
-      switch (data.action) {
-        case "set":
-          const result = this.envs.find((env) => env.key === data.key);
-          result ? result.value = data.value : this.envs.push({ key: data.key, value: data.value });
-          break;
-        case "unset":
-          const index = this.envs.findIndex((env) => env.key === data.key);
-          index >= 0 ? this.envs.splice(index, 1) : {};
-          break;
-        case "clear":
-          this.envs = [];
-          break;
-      }
-      this.update_document();
-    };
-  };
-
   // src/modules/fetcher.ts
   var import_json52 = __toESM(require_dist());
-  var Fetcher = class _Fetcher {
-    static ALLOW_ORIGIN = "http://localhost:8000";
-    static ALLOW_METHODS = "GET,POST,PUT,DELETE";
-    static METHODS = ["get", "post", "delete", "nav"];
-    static _instance;
-    logger = new Logger("Fetcher", true);
-    events = [];
-    busy_indicator = document.querySelector(`[${CONTAINERS.BUSY}]`);
-    environment_processor = EnvironmentProcessor.getInstance();
-    // Singleton constructor !
-    constructor() {
-      if (!!_Fetcher._instance) {
-        return _Fetcher._instance;
-      }
-      _Fetcher._instance = this;
-    }
-    static get = () => {
-      return new _Fetcher();
-    };
-    set_busy = () => {
-      this.busy_indicator ? {} : this.busy_indicator = document.querySelector(`[${CONTAINERS.BUSY}]`);
-      this.busy_indicator ? this.busy_indicator.style.display = "block" : {};
-    };
-    set_idle = () => {
-      this.busy_indicator ? this.busy_indicator.style.display = "none" : {};
-    };
-    _process_headers = (headers) => {
-      let headers_dump = [];
-      headers.forEach((v, k) => {
-        headers_dump.push(`'${k}'->'${v}'`);
-        const sse = k.toLowerCase();
-        switch (sse) {
-          case "x-nd-environment":
-            const data = import_json52.default.parse(v);
-            this.logger.info(`Received server environment '${sse}'. Content: '${v}'.`);
-            document.dispatchEvent(new CustomEvent(ND_EVENTS.ENVIRONMENT, { detail: data }));
-            break;
-          case "x-nd-event":
-            this.events = import_json52.default.parse(v);
-            this.logger.info(`Received server messages '${sse}'. Content: '${v}'.`);
-            break;
-          case "x-nd-url":
-            break;
-        }
-      });
-      this.logger.info(`Headers : 
-${headers_dump.join("\n")}`);
-    };
-    // Dispatch received events !
-    _process_events = (payload) => {
-      this.logger.info(`Processing events...`);
-      this.events.forEach((event) => {
-        this.logger.info(`Event: `, event);
-        const type = event.type;
-        let target = document;
-        switch (type) {
-          case ND_EVENTS.DOWNLOAD:
-            event.detail.data = payload;
-            break;
-          case ND_EVENTS.FORM_RESET:
-            const form_id = event.detail.form_id;
-            target = document.querySelector(`[data-ndtrack="${form_id}"]`);
-            !target ? target = document.getElementById(`${form_id}`) : {};
-            break;
-        }
-        const detail = import_json52.default.stringify(event.detail);
-        if (target) {
-          this.logger.info(`Dispatching event '${type}'. Detail: '${detail}'.`);
-          target.dispatchEvent(new CustomEvent(type, { detail: event.detail }));
-        } else {
-          this.logger.warn(`No target found for event '${type}'. Detail: '${detail}'.`);
-        }
-      });
-      return payload;
-    };
-    async execute_fetch(request) {
-      const url = request.url;
-      this.events = [];
-      let status = null;
-      let data = null;
-      request.headers.append("X-Nd-Version", `"${VERSION}"`);
-      request.headers.append("X-Nd-Url", `"${request.url}"`);
-      request.headers.append("X-Nd-Environment", `${JSON.stringify(this.environment_processor.get_environment())}`);
-      document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_BEFORE, { detail: { url, data: null, status } }));
-      try {
-        this.set_busy();
-        const response = await fetch(request);
-        this.logger.info(`Response status: ${response.status}`);
-        if (!response.ok) {
-          document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url, data: null, status: response.status } }));
-          this.logger.error(`Response status: ${response.status}`);
-          this.set_idle();
-          return null;
-        }
-        this._process_headers(response.headers);
-        const payload = await response.blob();
-        this.logger.info(`Result is of type '${payload.type}'.`);
-        const data2 = await this._process_events(payload).text();
-        document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_AFTER, { detail: { url, data: data2, status } }));
-        this.set_idle();
-        return data2;
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url, data: message, status } }));
-        this.logger.error(`Error on url '${url}':  ${message}`);
-      }
-      this.set_idle();
-      return null;
-    }
-    async send_form(form, operation = "accept") {
-      const formdata = new FormData(form);
-      formdata.append("nd-form_id", form.dataset.ndtrack ?? "");
-      formdata.append("nd-form_operation", operation);
-      const request = new Request(form.action, {
-        method: form.method,
-        body: formdata
-      });
-      return await this.execute_fetch(request);
-    }
-    async post_form_data(formdata, url) {
-      const request = new Request(url, {
-        method: "post",
-        body: formdata
-      });
-      return await this.execute_fetch(request);
-    }
-    _redirect_to = async (url) => {
-      if (!url.startsWith("/")) {
-        this.logger.error(`Cannot navigate to '${url}'. Only relative URLs are allowed !`);
-        return;
-      }
-      if (url === "/") {
-        this.logger.error(`Navigation to '/' is not allowed !`);
-        return;
-      }
-      const request = new Request(url);
-      this.logger.info(`Fetching '${url}' in a 'get' request.`);
-      const data = await this.execute_fetch(request);
-      if (data) {
-      }
-      document.dispatchEvent(new CustomEvent(ND_EVENTS.NAVIGATION, { detail: { url, data } }));
-    };
-    /**
-     * fetch_data - fetch data from server as text
-     */
-    async fetch_data(url, payload = {}) {
-      let [_method, _url] = ["get", url];
-      if (url.includes("::")) {
-        const [method, target] = url.split("::");
-        _method = method ?? "";
-        _url = target ?? "";
-        if (!_Fetcher.METHODS.includes(_method)) {
-          this.logger.error(`Only ${_Fetcher.METHODS.join(" or ")} URL modifiers are allowed. Supplied method was '${_method}:'.`);
-          return;
-        }
-      }
-      if (_method === "nav") {
-        await this._redirect_to(_url);
-        return;
-      }
-      let request = null;
-      if (_method == "get")
-        request = new Request(_url, { method: _method });
-      else
-        request = new Request(_url, { method: _method, body: import_json52.default.stringify(payload) });
-      this.logger.info(`Fetching '${_url}' in a '${_method}' request.`);
-      return await this.execute_fetch(request);
-    }
-    redirect = async (url) => {
-      if (!url)
-        return;
-      url.startsWith("nav::") ? {} : url = "nav::" + url;
-      return await this.fetch_data(url);
-    };
-  };
 
-  // src/syntax/syntax.ts
-  var NONE = [];
-  var Parameter = class {
-    constructor(name) {
-      this.name = name;
-    }
-  };
-  var Attribute = class {
-    constructor(name, unique, parameters, mandatory, requires_one_of) {
-      this.name = name;
-      this.unique = unique;
-      this.parameters = parameters;
-      this.mandatory = mandatory;
-      this.requires_one_of = requires_one_of;
-    }
-  };
-  var PARAMETER = class {
-    static URL = new Parameter("nd-url");
-    static TARGET = new Parameter("nd-target");
-    static KEY = new Parameter("nd-key");
-    static INTERVAL = new Parameter("nd-interval");
-    static ACTION = new Parameter("nd-action");
-    static PARAMS = new Parameter("nd-params");
-    static DIALOG = new Parameter("nd-dialog");
-    static enum = [this.URL, this.TARGET, this.KEY, this.INTERVAL, this.ACTION, this.PARAMS, this.DIALOG];
-  };
-  var ATTRIBUTE = class _ATTRIBUTE {
-    static MAIN = new Attribute("nd-main", true, [PARAMETER.URL, PARAMETER.TARGET], [PARAMETER.URL], NONE);
-    static SOURCE = new Attribute("nd-source", false, [PARAMETER.URL, PARAMETER.TARGET], [PARAMETER.URL], NONE);
-    static ENV = new Attribute("nd-env", false, [PARAMETER.KEY], [PARAMETER.KEY], NONE);
-    static VERSION = new Attribute("nd-version", false, NONE, NONE, NONE);
-    static POLL = new Attribute("nd-poll", false, [PARAMETER.URL, PARAMETER.TARGET, PARAMETER.INTERVAL, PARAMETER.ACTION], NONE, [PARAMETER.URL, PARAMETER.ACTION]);
-    static NAV = new Attribute("nd-nav", false, [PARAMETER.URL, PARAMETER.TARGET, PARAMETER.DIALOG, PARAMETER.PARAMS], [PARAMETER.URL, PARAMETER.TARGET], NONE);
-    static TEST = new Attribute("nd-test", false, [PARAMETER.PARAMS], [PARAMETER.PARAMS], NONE);
-    static enum = [this.MAIN, this.SOURCE, this.ENV, this.VERSION, this.POLL, this.NAV, this.TEST];
-    static attribute_list = `[${_ATTRIBUTE.enum.map((e) => {
-      return e.name;
-    }).join("|")}]`;
-  };
-  var logger = new Logger("FragmentCheck");
-  var FragmentCheckResult = class {
+  // src/syntax/types.ts
+  var FragmentCheckResult = class _FragmentCheckResult {
+    static logger = new Logger("FragmentCheck");
     errors = [];
     warnings = [];
+    add_error = (message) => {
+      this.errors.push(message);
+    };
+    add_warning = (message) => {
+      this.warnings.push(message);
+    };
     has_errors = () => {
       return this.errors.length > 0;
     };
     has_warnings = () => {
       return this.warnings.length > 0;
     };
+    clear = () => {
+      this.errors = [];
+      this.warnings = [];
+    };
     log_all = () => {
       this.errors.forEach((e) => {
-        logger.error(e);
+        _FragmentCheckResult.logger.error(e);
       });
       this.warnings.forEach((e) => {
-        logger.warn(e);
+        _FragmentCheckResult.logger.warn(e);
+      });
+    };
+  };
+
+  // src/syntax/syntax.ts
+  var TRUNCATE_LENGTH = 80;
+  var WILDCARD = "*";
+  var KEYWORDS = {
+    // Main keywords
+    NONE: { name: "", tags: [WILDCARD] },
+    MAIN: { name: "nd-main", tags: [WILDCARD] },
+    SOURCE: { name: "nd-source", tags: [WILDCARD] },
+    NAV: { name: "nd-nav", tags: [WILDCARD] },
+    VERSION: { name: "nd-version", tags: [WILDCARD] },
+    POLL: { name: "nd-poll", tags: [WILDCARD] },
+    CONTEXT: { name: "nd-context", tags: ["template"] },
+    SELECT: { name: "nd-select", tags: ["select"] },
+    // TODO : check if used !
+    ENV: { name: "nd-env", tags: [WILDCARD] },
+    TEST: { name: "nd-test", tags: [WILDCARD] }
+  };
+  var PARAMETERS = {
+    // Parameter appearing beside of a keyword
+    INFORM: { name: "nd-inform", standalone: false, needsvalue: true },
+    TARGET: { name: "nd-target", standalone: false, needsvalue: true },
+    KEY: { name: "nd-key", standalone: false, needsvalue: true },
+    INTERVAL: { name: "nd-interval", standalone: false, needsvalue: true },
+    ACTION: { name: "nd-action", standalone: false, needsvalue: true },
+    PARAMS: { name: "nd-params", standalone: false, needsvalue: true },
+    DIALOG: { name: "nd-dialog", standalone: false, needsvalue: true },
+    SELECTED: { name: "nd-selected", standalone: false, needsvalue: true },
+    DEFAULT: { name: "nd-default", standalone: false, needsvalue: true },
+    PARAMETER: { name: "nd-params", standalone: false, needsvalue: true },
+    // Standalone parameters (no keyword needed)
+    URL: { name: "nd-url", standalone: true, needsvalue: true },
+    SHOWFOR: { name: "nd-show-for", standalone: true, needsvalue: true },
+    HIDEFOR: { name: "nd-hide-for", standalone: true, needsvalue: true },
+    FOLLOW: { name: "nd-follow", standalone: true, needsvalue: false },
+    SYNC: { name: "nd-sync", standalone: true, needsvalue: false },
+    ACTIVATE: { name: "nd-activate", standalone: true, needsvalue: false }
+  };
+  var SYNTAX = [
+    // Keyword syntax
+    { keyword: KEYWORDS.VERSION, required: [], optional: [] },
+    { keyword: KEYWORDS.CONTEXT, required: [], optional: [] },
+    { keyword: KEYWORDS.MAIN, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.SOURCE, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.NAV, required: [PARAMETERS.URL, PARAMETERS.TARGET], optional: [PARAMETERS.DIALOG, PARAMETERS.PARAMETER] },
+    { keyword: KEYWORDS.SELECT, required: [PARAMETERS.TARGET], optional: [PARAMETERS.URL, PARAMETERS.SELECTED, PARAMETERS.INFORM, PARAMETERS.DEFAULT] },
+    // Standalone parameters
+    { keyword: KEYWORDS.NONE, required: [], optional: [PARAMETERS.SHOWFOR, PARAMETERS.HIDEFOR, PARAMETERS.FOLLOW, PARAMETERS.SYNC, PARAMETERS.URL, PARAMETERS.ACTIVATE] }
+  ];
+  var KEYWORD_SET = new Set(Object.values(KEYWORDS).flatMap((k) => k.name));
+  var PARAMETER_SET = new Set(Object.values(PARAMETERS).flatMap((p) => p.name));
+  var find_nd_elements = (fragment) => {
+    return [...fragment.querySelectorAll("*")].filter((el) => [...el.attributes].some((attr) => attr.name.startsWith("nd-")));
+  };
+  var SyntaxCheck = class {
+    static fragment_check_result = new FragmentCheckResult();
+    static find_syntax = (element) => {
+      let result = SYNTAX.find((item) => item.keyword === KEYWORDS.NONE);
+      for (const s of SYNTAX) {
+        if (element.hasAttribute(s.keyword.name)) {
+          result = s;
+          break;
+        }
+      }
+      ;
+      return result;
+    };
+    static find_nd_attributes = (element) => {
+      return [...element.attributes].filter((attr) => attr.name.startsWith("nd-")).flatMap((a) => a.name);
+    };
+    static clear_errors = () => {
+      this.fragment_check_result.clear();
+    };
+    static dump_errors_and_warnings = () => {
+      this.fragment_check_result.log_all();
+    };
+    static has_errors = () => {
+      return this.fragment_check_result.has_errors() || this.fragment_check_result.has_warnings();
+    };
+    static check_element = (element) => {
+      const element_html = Util.truncate(element.outerHTML, TRUNCATE_LENGTH);
+      const nd_attributes = this.find_nd_attributes(element);
+      const kwds = [...new Set(nd_attributes).intersection(KEYWORD_SET)];
+      switch (kwds.length) {
+        case 0:
+          break;
+        case 1:
+          const kwd_name = kwds[0];
+          const kwd = Object.values(KEYWORDS).find((k) => k.name === kwd_name);
+          if (kwd?.tags) {
+            if (!kwd.tags.includes(WILDCARD) && !kwd.tags.includes(element.tagName.toLowerCase())) {
+              this.fragment_check_result.add_error(`The ${kwd.name} keyword should sit on following tag(s) : ${kwd.tags.join(", ")}`);
+            }
+          }
+          const attr = element.getAttribute(kwd_name);
+          if (attr)
+            this.fragment_check_result.add_warning(`An nd-keyword (${kwd_name}) cannot have a value. Element : ${element_html}`);
+          break;
+        default:
+          this.fragment_check_result.add_error(`Too many nd-keywords found. Element : ${element_html}`);
+      }
+      const syntax = this.find_syntax(element);
+      if (!syntax) {
+        this.fragment_check_result.add_warning(`No syntax check found for element ${element_html}`);
+        return;
+      }
+      nd_attributes.forEach((attr) => {
+        const attribute_id_valid = KEYWORD_SET.has(attr) || PARAMETER_SET.has(attr);
+        if (!attribute_id_valid) {
+          this.fragment_check_result.add_error(`Unknown attribute ${attr} in element ${element_html}`);
+        }
+        if (kwds.length > 0 || attr === syntax.keyword.name)
+          return;
+        const attribute = syntax.optional.find((a) => a.name === attr) || syntax.required.find((a) => a.name === attr);
+        if (!attribute) {
+          this.fragment_check_result.add_error(`Attribute ${attr} cannot be used on element ${element_html}`);
+        } else if (!attribute.standalone)
+          this.fragment_check_result.add_error(`Attribute ${attr} is not standalone and therfore cannot be used on element ${element_html}`);
+      });
+      syntax.required.forEach((required) => {
+        if (!element.hasAttribute(required.name)) {
+          this.fragment_check_result.add_error(`Mandatory parameter ${required.name} is missing on element ${element_html}`);
+        } else if (required.needsvalue && !element.getAttribute(required.name)?.trim()) {
+          this.fragment_check_result.add_error(`Parameter ${required.name} has no value on element ${element_html}`);
+        }
+      });
+      syntax.optional.forEach((optional) => {
+        if (element.hasAttribute(optional.name) && optional.needsvalue && !element.getAttribute(optional.name)?.trim()) {
+          this.fragment_check_result.add_error(`Parameter ${optional.name} has no value on element ${element_html}`);
+        }
       });
     };
   };
   var check_fragment = (fragment) => {
-    const result = new FragmentCheckResult();
-    const check_attribute_unicity = (element) => {
-      const has_attr = [];
-      ATTRIBUTE.enum.forEach((attr) => {
-        has_attr.push(element.hasAttribute(attr.name));
-      });
-      if (has_attr.filter((v) => v).length > 1) {
-        result.errors.push(`Multiple attributes are present on element '${Util.compress(element.outerHTML)}' ! Use one and only one of ${ATTRIBUTE.attribute_list} !`);
-      }
-    };
-    ATTRIBUTE.enum.forEach((attribute) => {
-      const elements = fragment.querySelectorAll(`[${attribute.name}]`);
-      if (attribute.unique && elements.length > 1) {
-        result.errors.push(`There can only be one '${attribute.name}' on the page !`);
-      }
-      elements.forEach((element) => {
-        const html = Util.compress(element.outerHTML);
-        const parameters = [];
-        logger.info(`Checking attribute '${attribute.name}' on element '${html}'.`);
-        check_attribute_unicity(element);
-        attribute.parameters.forEach((parameter) => {
-          const mandatory = attribute.mandatory.includes(parameter);
-          const qualifier = mandatory ? "mandatory" : "optional";
-          logger.info(`Checking ${qualifier} parameter '${parameter.name}' of attribute '${attribute.name}'.`);
-          if (mandatory && !element.hasAttribute(parameter.name)) {
-            result.errors.push(`Mandatory attribute '${parameter.name}' not found on element '${html}' !`);
-          }
-          if (element.hasAttribute(parameter.name)) {
-            parameters.push(parameter);
-            const value = element.getAttribute(parameter.name);
-            if (!value) {
-              result.errors.push(`Attribute '${parameter.name}' on element '${html}' has no value !`);
-            }
-          }
-        });
-        if (attribute.requires_one_of.length && !attribute.requires_one_of.some((r) => parameters.includes(r))) {
-          result.errors.push(`At least one of [${attribute.requires_one_of.join("|")}] is required on element '${html}'!`);
-        }
-      });
+    SyntaxCheck.clear_errors();
+    find_nd_elements(fragment).forEach((element) => {
+      SyntaxCheck.check_element(element);
     });
-    result.log_all();
-    return result.has_errors() ? "FAILURE" /* FAILURE */ : "SUCCESS" /* SUCCESS */;
+    SyntaxCheck.dump_errors_and_warnings();
+    return SyntaxCheck.has_errors() ? "FAILURE" /* FAILURE */ : "SUCCESS" /* SUCCESS */;
   };
 
   // node_modules/.pnpm/uuid@14.0.2/node_modules/uuid/dist/stringify.js
@@ -2147,8 +1974,8 @@ ${headers_dump.join("\n")}`);
   var v4_default = v4;
 
   // src/modules/util.ts
-  var import_json53 = __toESM(require_dist());
-  var logger2 = new Logger("Util", true);
+  var import_json5 = __toESM(require_dist());
+  var logger = new Logger("Util", true);
   var Util = class _Util {
     static randomUUID = () => {
       return v4_default();
@@ -2156,19 +1983,19 @@ ${headers_dump.join("\n")}`);
     static to_json = (data) => {
       let result = {};
       try {
-        result = import_json53.default.parse(data);
+        result = import_json5.default.parse(data);
       } catch (error) {
-        logger2.error(`Error: no valid json data supplied: '${data}'. Please see https://json5.org/.`);
+        logger.error(`Error: no valid json data supplied: '${data}'. Please see https://json5.org/.`);
       } finally {
         return result;
       }
     };
-    static is_internal_url = (href) => {
-      if (!href || href.startsWith("#") || /^(javascript|mailto|tel):/i.test(href)) {
+    static is_internal_url = (url) => {
+      if (!url || url.startsWith("#") || /^(javascript|mailto|tel):/i.test(url)) {
         return true;
       }
       try {
-        const targetUrl = new URL(href, window.location.origin);
+        const targetUrl = new URL(url, window.location.origin);
         return targetUrl.origin === window.location.origin;
       } catch (error) {
         return false;
@@ -2248,7 +2075,7 @@ ${headers_dump.join("\n")}`);
      *  @return: nothing, the function modifies the node in place.
      */
     static clear_node = (node) => {
-      logger2.info(`clear_node | node name: '${node.nodeName.toLowerCase()}'`);
+      logger.info(`clear_node | node name: '${node.nodeName.toLowerCase()}'`);
       const range = document.createRange();
       range.selectNodeContents(node);
       range.deleteContents();
@@ -2257,17 +2084,17 @@ ${headers_dump.join("\n")}`);
      * create_fragment - create a document fragment from HTML code.
      */
     static create_fragment(html) {
-      logger2.info(`create_fragment | Content: '${html ? _Util.truncate(html) : ""}'`);
+      logger.info(`create_fragment | Content: '${html ? _Util.truncate(html) : ""}'`);
       return document.createRange().createContextualFragment(html);
     }
     static refresh(fragment) {
       for (const [_, handler] of Object.entries(nd_core.handlers)) {
-        logger2.info(`Process by ${handler.constructor.name}`);
+        logger.info(`Process by ${handler.constructor.name}`);
         handler.process(fragment);
       }
       check_fragment(fragment);
       for (const [_, handler] of Object.entries(nd_core.handlers)) {
-        logger2.info(`Postprocess by ${handler.constructor.name}`);
+        logger.info(`Postprocess by ${handler.constructor.name}`);
         handler.postprocess();
       }
       const form = fragment.querySelector("form");
@@ -2294,7 +2121,7 @@ ${headers_dump.join("\n")}`);
      * @return: nothing, the function modifies the DOM in place.
      */
     static insert_fragment = (target, fragment, append = false, refresh = false, new_layer = false) => {
-      logger2.info(`insert_fragment | Target: '${target.tagName.toLowerCase()}'. Mode: ${append ? "append" : "replace"}. Refresh: ${refresh ? "yes" : "no"}.`);
+      logger.info(`insert_fragment | Target: '${target.tagName.toLowerCase()}'. Mode: ${append ? "append" : "replace"}. Refresh: ${refresh ? "yes" : "no"}.`);
       document.dispatchEvent(new CustomEvent(ND_EVENTS.FRAGMENT_BEFORE_INSERT, { detail: { target, fragment, append } }));
       append ? {} : _Util.clear_node(target);
       target.appendChild(fragment);
@@ -2309,7 +2136,7 @@ ${headers_dump.join("\n")}`);
      * sleep_ms - sleep during a specific period (ms).
      */
     static async sleep_ms(ms) {
-      logger2.info(`sleep_ms | Timeout: ${ms}ms.`);
+      logger.info(`sleep_ms | Timeout: ${ms}ms.`);
       await new Promise((resolve) => setTimeout(resolve, ms));
     }
     /**
@@ -2318,7 +2145,7 @@ ${headers_dump.join("\n")}`);
     static compress(str) {
       if (typeof str !== "string")
         return str;
-      logger2.info(`compress | String: '${_Util.truncate(str)}'.`);
+      logger.info(`compress | String: '${_Util.truncate(str)}'.`);
       return str.replace(/\n+/g, " ").replace(/\r+/g, " ").replace(/  +/g, " ");
     }
     static navigate_to = async (new_url) => {
@@ -2328,14 +2155,14 @@ ${headers_dump.join("\n")}`);
         method = parsed_method ?? "";
         url = parsed_url ?? "";
         if (!["get", "post"].includes(method)) {
-          logger2.error(`Only 'get::' or 'post::' url modifiers are allowed. Supplied method was '${method}:'.`);
+          logger.error(`Only 'get::' or 'post::' url modifiers are allowed. Supplied method was '${method}:'.`);
           return;
         }
       } else {
         url = new_url;
       }
       if (["get", "post"].includes(method)) {
-        logger2.info(`Fetching url '${url} with a '${method}' request.`);
+        logger.info(`Fetching url '${url} with a '${method}' request.`);
         const request = new Request(url, { method: method.toUpperCase() });
         await nd_core.fetcher.execute_fetch(request);
         return;
@@ -2350,22 +2177,29 @@ ${headers_dump.join("\n")}`);
           return;
         }
       });
-      logger2.warn(`navigate_to | Url: '${new_url}'. Link: ${result ? "found" : "not found"}.`);
+      logger.warn(`navigate_to | Url: '${new_url}'. Link: ${result ? "found" : "not found"}.`);
       return result;
     };
     static open_layer = (html, mode) => {
       let container = null;
       const fragment = _Util.create_fragment(html);
       switch (mode) {
-        case 1 /* MODAL */:
-          container = document.querySelector(`[${CONTAINERS.DIALOGS}]`);
+        case 0 /* MODAL */:
+          container = document.querySelector(`.nd-dialogs`);
+          if (!container) {
+            container = document.createElement("div");
+            container.classList.add("nd-dialogs");
+            document.body.prepend(container);
+          }
           break;
-        case 2 /* TRANSIENT */:
-          container = document.querySelector(`[${CONTAINERS.NOTIFICATIONS}]`);
+        case 1 /* TRANSIENT */:
+          container = document.querySelector(`.nd-notifications`);
+          if (!container) {
+            container = document.createElement("div");
+            container.classList.add("nd-notifications");
+            document.body.prepend(container);
+          }
           break;
-        default:
-          logger2.error(`Unknown layer mode : '${mode}'.`);
-          return null;
       }
       if (!container)
         return null;
@@ -2390,20 +2224,217 @@ ${headers_dump.join("\n")}`);
     };
   };
 
+  // src/modules/busy_indicator.ts
+  var get_or_create_busy_indicator = () => {
+    let container = document.querySelector(".nd-busy");
+    if (!container) {
+      container = document.createElement("div");
+      container.classList.add("nd-busy");
+      const spinner = document.createElement("div");
+      spinner.classList.add("nd-spinner");
+      container.appendChild(spinner);
+      document.body.prepend(container);
+    }
+    return container;
+  };
+  var BusyIndicator = class {
+    static set = () => {
+      const container = get_or_create_busy_indicator().style.display = "block";
+    };
+    static reset = () => {
+      const container = get_or_create_busy_indicator().style.display = "none";
+    };
+  };
+
+  // src/modules/fetcher.ts
+  var Fetcher = class _Fetcher {
+    static ALLOW_ORIGIN = "http://localhost:8000";
+    static ALLOW_METHODS = "GET,POST,PUT,DELETE";
+    static METHODS = ["get", "post", "delete", "nav"];
+    static _instance;
+    logger = new Logger("Fetcher", true);
+    events = [];
+    // Singleton constructor !
+    constructor() {
+      if (_Fetcher._instance) {
+        return _Fetcher._instance;
+      }
+      _Fetcher._instance = this;
+    }
+    static get = () => {
+      return new _Fetcher();
+    };
+    process_headers = (headers) => {
+      let headers_dump = [];
+      headers.forEach((v, k) => {
+        headers_dump.push(`'${k}'->'${v}'`);
+        const sse = k.toLowerCase();
+        switch (sse) {
+          case "x-nd-environment":
+            const data = import_json52.default.parse(v);
+            this.logger.info(`Received server environment '${sse}'. Content: '${v}'.`);
+            document.dispatchEvent(new CustomEvent(ND_EVENTS.ENVIRONMENT, { detail: data }));
+            break;
+          case "x-nd-event":
+            this.events = import_json52.default.parse(v);
+            this.logger.info(`Received server messages '${sse}'. Content: '${v}'.`);
+            break;
+          case "x-nd-url":
+            break;
+        }
+      });
+      this.logger.info(`Headers : 
+${headers_dump.join("\n")}`);
+    };
+    // Dispatch received events !
+    process_events = (payload) => {
+      this.logger.info(`Processing events...`);
+      this.events.forEach((event) => {
+        this.logger.info(`Event: `, event);
+        const type = event.type;
+        let target = document;
+        switch (type) {
+          case ND_EVENTS.DOWNLOAD:
+            event.detail.data = payload;
+            break;
+          case ND_EVENTS.FORM_RESET:
+            const form_id = event.detail.form_id;
+            target = document.querySelector(`[data-ndtrack="${form_id}"]`);
+            !target ? target = document.getElementById(`${form_id}`) : {};
+            break;
+        }
+        const detail = import_json52.default.stringify(event.detail);
+        if (target) {
+          this.logger.info(`Dispatching event '${type}'. Detail: '${detail}'.`);
+          target.dispatchEvent(new CustomEvent(type, { detail: event.detail }));
+        } else {
+          this.logger.warn(`No target found for event '${type}'. Detail: '${detail}'.`);
+        }
+      });
+      return payload;
+    };
+    async execute_fetch(request) {
+      const url = request.url;
+      this.events = [];
+      let status = null;
+      let data = null;
+      if (Util.is_internal_url(request.url)) {
+        request.headers.append("X-Nd-Version", `"${VERSION}"`);
+        request.headers.append("X-Nd-Url", `"${request.url}"`);
+        request.headers.append("X-Nd-Environment", `${JSON.stringify(nd_core.get_environment())}`);
+        request.headers.append("X-Nd-Context", `${JSON.stringify(nd_core.get_context())}`);
+      }
+      document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_BEFORE, { detail: { url, data: null, status } }));
+      try {
+        BusyIndicator.set();
+        const response = await fetch(request);
+        this.logger.info(`Response status: ${response.status}`);
+        if (!response.ok) {
+          document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url, data: null, status: response.status } }));
+          this.logger.error(`Response status: ${response.status}`);
+          BusyIndicator.reset();
+          return;
+        }
+        this.process_headers(response.headers);
+        const payload = await response.blob();
+        this.logger.info(`Result is of type '${payload.type}'.`);
+        const data2 = await this.process_events(payload).text();
+        document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_AFTER, { detail: { url, data: data2, status } }));
+        BusyIndicator.reset();
+        return data2;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url, data: message, status } }));
+        this.logger.error(`Error on url '${url}':  ${message}`);
+      }
+      BusyIndicator.reset();
+      return;
+    }
+    async send_form(form, operation = "accept") {
+      const formdata = new FormData(form);
+      formdata.append("nd-form_id", form.dataset.ndtrack ?? "");
+      formdata.append("nd-form_operation", operation);
+      const request = new Request(form.action, {
+        method: form.method,
+        body: formdata
+      });
+      return await this.execute_fetch(request);
+    }
+    async post_form_data(formdata, url) {
+      const request = new Request(url, {
+        method: "post",
+        body: formdata
+      });
+      return await this.execute_fetch(request);
+    }
+    redirect_to = (url) => {
+      if (!Util.is_internal_url(url)) {
+        this.logger.error(`Cannot navigate to '${url}'. Only relative URLs are allowed !`);
+        return;
+      }
+      if (Util.is_root_url(url)) {
+        this.logger.error(`Navigation to '/' is not allowed !`);
+        return;
+      }
+      if (!nd_core.main_container) {
+        this.logger.error(`Cannot navigate to '${url}'. No main container defined !`);
+        return;
+      }
+      const request = new Request(url);
+      this.logger.info(`Fetching '${url}' in a 'get' request.`);
+      this.execute_fetch(request).then((data) => {
+        if (data) {
+          Util.clear_node(nd_core.main_container);
+          const fragment = Util.create_fragment(data);
+          Util.insert_fragment(nd_core.main_container, fragment, false, true);
+          document.dispatchEvent(new CustomEvent(ND_EVENTS.NAVIGATION, { detail: { url, data } }));
+        }
+      });
+    };
+    /**
+     * fetch_data - fetch data from server as text
+     */
+    async fetch_data(url, payload = {}) {
+      let [_method, _url] = ["get", url];
+      if (url.includes("::")) {
+        const [method, target] = url.split("::");
+        _method = method ?? "";
+        _url = target ?? "";
+        if (!_Fetcher.METHODS.includes(_method)) {
+          this.logger.error(`Only ${_Fetcher.METHODS.join(" or ")} URL modifiers are allowed. Supplied method was '${_method}:'.`);
+          return;
+        }
+      }
+      if (_method === "nav") {
+        await this.redirect_to(_url);
+        return;
+      }
+      let request = null;
+      if (_method == "get")
+        request = new Request(_url, { method: _method });
+      else
+        request = new Request(_url, { method: _method, body: import_json52.default.stringify(payload) });
+      this.logger.info(`Fetching '${_url}' in a '${_method}' request.`);
+      return await this.execute_fetch(request);
+    }
+  };
+
   // src/components/notifications/abstract_notification.ts
-  var logger3 = new Logger("Notification");
+  var logger2 = new Logger("Notification");
   var AbstractNotification = class {
     uuid = Util.randomUUID();
     html;
     dialog_instance;
     close_btn;
+    constructor() {
+    }
     on_close_handler = () => {
       this.close_btn?.removeEventListener("click", this.on_close_handler);
       this.dialog_instance.remove();
     };
     render = () => {
-      this.dialog_instance = Util.open_layer(this.html, 2 /* TRANSIENT */);
-      this.close_btn = this.dialog_instance.querySelector("[nd-close]");
+      this.dialog_instance = Util.open_layer(this.html, 1 /* TRANSIENT */);
+      this.close_btn = this.dialog_instance.querySelector("[data-close]");
       this.close_btn?.addEventListener("click", this.on_close_handler);
       setTimeout(() => {
         this.on_close_handler();
@@ -2415,7 +2446,7 @@ ${headers_dump.join("\n")}`);
   var HTML_TEMPLATE = `
 <div nd-notification id="$id" class="nd-notification bg-$severity-subtle">
     <div class="nd-content">
-        <span nd-close class="nd-close">&times;</span>
+        <span data-close class="nd-close">&times;</span>
         $message
     </div>
 </div>`;
@@ -2432,7 +2463,7 @@ ${headers_dump.join("\n")}`);
   var HTML_TEMPLATE2 = `
 <div nd-notification id="$id" class="nd-toast" role="alert">
     <div class="nd-content">
-        <span nd-close class="nd-close">&times;</span>
+        <span data-close class="nd-close">&times;</span>
         <h5 class="nd-toast-header">$title</h5>
         <div class="nd-toast-content">$message</div>
     </div>
@@ -2446,25 +2477,201 @@ ${headers_dump.join("\n")}`);
     }
   };
 
+  // src/processors/abstract_processor.ts
+  var AbstractProcessor = class _AbstractProcessor {
+    // Stockage des instances par classe concrète
+    static instances = /* @__PURE__ */ new Map();
+    logger;
+    constructor() {
+      this.logger = new Logger(this.constructor.name.replace("_", ""), false);
+    }
+    static getInstance() {
+      if (!_AbstractProcessor.instances.has(this)) {
+        _AbstractProcessor.instances.set(this, new this());
+      }
+      return _AbstractProcessor.instances.get(this);
+    }
+  };
+
+  // src/processors/context_processor.ts
+  var logger3 = new Logger("Context");
+  var Context = class {
+    name;
+    source;
+    params = { show: "", hide: "", enable: "", disable: "", remove: "", reset: "" };
+    constructor(element) {
+      this.source = element.outerHTML;
+      const truncated_html = Util.truncate(this.source);
+      for (const data in element.dataset) {
+        if (data === "name") {
+          this.name = element.dataset[data] || "";
+          if (!this.name)
+            logger3.error(`No context name is defined on element ${truncated_html}.`);
+        } else {
+          if (data in this.params) {
+            this.params[data] = element.dataset[data] ?? "";
+          } else {
+            logger3.warn(`Invalid context parameter '${data}' on element ${truncated_html}.`);
+          }
+        }
+      }
+    }
+  };
+  var ContextProcessor = class extends AbstractProcessor {
+    active_context = NO_CONTEXT;
+    contexts = [];
+    constructor() {
+      super();
+      this.logger.info(`Adding a listener to handle '${ND_EVENTS.CONTEXT}' events.`);
+      document.addEventListener(ND_EVENTS.CONTEXT, () => {
+      });
+      document.addEventListener(ND_EVENTS.REFRESH_AFTER, () => {
+      });
+    }
+    apply_context = () => {
+      this.logger.info(`Applying context '${this.active_context}'.`);
+      const context_names = this.active_context !== NO_CONTEXT ? [NO_CONTEXT, this.active_context] : [NO_CONTEXT];
+      for (const name of context_names) {
+        this.contexts.forEach((context) => {
+          if (context.name !== name)
+            return;
+          for (const key of Object.keys(context.params)) {
+            const selector = context.params[key];
+            const targets = Util.get_targets(selector);
+            switch (key) {
+              case "show":
+                targets.forEach((t) => {
+                  t.hidden = false;
+                });
+                break;
+              case "hide":
+                targets.forEach((t) => {
+                  t.hidden = true;
+                });
+                break;
+              case "enable":
+                targets.forEach((t) => {
+                  t.disabled = false;
+                });
+                break;
+              case "disable":
+                targets.forEach((t) => {
+                  t.disabled = true;
+                });
+                break;
+              case "remove":
+                targets.forEach((t) => {
+                  t.remove();
+                });
+                break;
+              case "reset":
+                targets.forEach((t) => {
+                  t.reset();
+                });
+                targets.forEach((t) => {
+                  t.dispatchEvent(new CustomEvent(ND_EVENTS.RESET));
+                });
+                break;
+            }
+          }
+        });
+      }
+    };
+    get_context = () => {
+      return this.active_context;
+    };
+    set_context = (name) => {
+      this.active_context = name;
+      this.apply_context();
+    };
+    process = (fragment) => {
+      const elements = fragment.querySelectorAll(`[${KEYWORDS.CONTEXT.name}]`);
+      elements.forEach((element) => {
+        const source = element.outerHTML;
+        this.logger.info(`Processing '${KEYWORDS.CONTEXT.name}' on element`, Util.truncate(source));
+        this.contexts.find((ctx) => ctx.source === source) ? {} : this.contexts.push(new Context(element));
+      });
+    };
+    postprocess = () => {
+      this.logger.info(`Postprocessing ${this.contexts.length} context(s).`);
+      this.apply_context();
+    };
+  };
+
+  // src/processors/environment_processor.ts
+  var import_json53 = __toESM(require_dist());
+  var EnvironmentProcessor = class extends AbstractProcessor {
+    envs = [];
+    // The current environments list of {key, value}
+    constructor() {
+      super();
+      this.logger.info(`Adding a listener to handle '${ND_EVENTS.ENVIRONMENT}' events.`);
+      document.addEventListener(ND_EVENTS.ENVIRONMENT, this.event_handler);
+      Object.preventExtensions(this);
+    }
+    get_environment = () => {
+      return this.envs;
+    };
+    update_document = () => {
+      this.logger.info(`Updating document. Environment: ${import_json53.default.stringify(this.envs)}.`);
+      document.querySelectorAll("[nd-env]").forEach((e) => {
+        const key = e.getAttribute("nd-env");
+        if (!key) {
+          this.logger.error(`No key specified in element`, e);
+          return;
+        }
+        let result = "";
+        if (key === "*" && this.envs.length > 0) {
+          const env_list = [];
+          this.envs.forEach((e2) => {
+            env_list.push(`${e2.key}=${e2.value}`);
+          });
+          result = env_list.join(", ");
+        } else {
+          const item = this.envs.find((env) => env.key === key);
+          result = item ? item.value : "";
+        }
+        result ? e.innerHTML = result : {};
+      });
+    };
+    process = (fragment) => {
+    };
+    postprocess = () => {
+      this.update_document();
+    };
+    event_handler = (event) => {
+      this.logger.info(`Event: ${event.type}. Data: '${import_json53.default.stringify(event.detail)}'.`);
+      const data = event.detail;
+      switch (data.action) {
+        case "set":
+          const result = this.envs.find((env) => env.key === data.key);
+          result ? result.value = data.value : this.envs.push({ key: data.key, value: data.value });
+          break;
+        case "unset":
+          const index = this.envs.findIndex((env) => env.key === data.key);
+          index >= 0 ? this.envs.splice(index, 1) : {};
+          break;
+        case "clear":
+          this.envs = [];
+          break;
+      }
+      this.update_document();
+    };
+  };
+
   // src/main/core.ts
   var Core = class _Core {
     static _instance;
     logger = new Logger("Core", true);
-    version = `${INFOS.PROGNAME} ${INFOS.VERSION}`;
-    fetcher = new Fetcher();
+    version = `${PROGNAME}`;
+    fetcher = Fetcher.get();
     debug = new Debug();
     util = Util;
     handlers = [];
     trackers = [];
     main_container;
-    alert = (severity, message) => {
-      new Alert(severity, message).render();
-    };
-    toast = (title, message) => {
-      new Toast(title, message).render();
-    };
     constructor() {
-      if (!!_Core._instance) {
+      if (_Core._instance) {
         return _Core._instance;
       }
       _Core._instance = this;
@@ -2473,6 +2680,24 @@ ${headers_dump.join("\n")}`);
     set_main_container = () => {
       const nd_main = document.querySelector("[nd-main]");
       nd_main ? this.main_container = nd_main : this.logger.warn(`No 'nd-main' element found in the document !`);
+    };
+    alert = (severity, message) => {
+      new Alert(severity, message).render();
+    };
+    toast = (title, message) => {
+      new Toast(title, message).render();
+    };
+    set_context = (name) => {
+      ContextProcessor.getInstance().set_context(name);
+    };
+    get_context = () => {
+      return ContextProcessor.getInstance().get_context();
+    };
+    clear_context = () => {
+      ContextProcessor.getInstance().set_context(NO_CONTEXT);
+    };
+    get_environment = () => {
+      return EnvironmentProcessor.getInstance().get_environment();
     };
     static init = () => {
       return new Promise((resolve) => {
@@ -2557,31 +2782,23 @@ ${headers_dump.join("\n")}`);
 
   // src/modules/source.ts
   var Source = class {
-    constructor(element, type) {
+    constructor(element) {
       this.element = element;
-      this.type = type;
       check_fragment(element);
-      this.logger = new Logger(`Source (${type.name})`, true);
-      this.url = element.getAttribute(PARAMETER.URL.name)?.trim() ?? "";
-      this.target = element.getAttribute(PARAMETER.TARGET.name)?.trim() ?? "";
+      let type = element.hasAttribute(KEYWORDS.MAIN.name) ? "main" : "";
+      type = element.hasAttribute(KEYWORDS.SOURCE.name) ? "source" : type;
+      this.logger = new Logger(`Source (${type})`, true);
+      this.url = element.getAttribute(PARAMETERS.URL.name)?.trim() ?? "";
+      this.target = element.getAttribute(PARAMETERS.TARGET.name)?.trim() ?? "";
       this.targets = this.target ? Array.from(document.querySelectorAll(this.target)) : [this.element];
-      if (!this.url) {
-        this.logger.error(`No valid URL defined in '${this.type.name}' on element`, element);
-        element.innerHTML = `<span style="color: red">Error: no valid url defined in '${this.type.name}' on element &lt;${element.tagName.toLowerCase()}... /"&gt;</span>`;
-        return;
-      }
-      if (this.url === "/") {
-        this.logger.error(`The URL in '${this.type.name}' cannot be the root url (/) !`, this.element);
-        return;
-      }
-      if (type === ATTRIBUTE.SOURCE) {
+      if (element.hasAttribute(KEYWORDS.SOURCE.name)) {
         new HandlerTracker().add_listener(this.element, ND_EVENTS.RESET, this.refresh);
       }
       this.refresh();
-      if (this.type === ATTRIBUTE.MAIN) {
-        this.element.removeAttribute(ATTRIBUTE.MAIN.name);
-        this.element.removeAttribute(PARAMETER.URL.name);
-        this.element.removeAttribute(PARAMETER.TARGET.name);
+      if (element.hasAttribute(KEYWORDS.MAIN.name)) {
+        this.element.removeAttribute(KEYWORDS.MAIN.name);
+        this.element.removeAttribute(PARAMETERS.URL.name);
+        this.element.removeAttribute(PARAMETERS.TARGET.name);
       }
     }
     logger;
@@ -2590,7 +2807,7 @@ ${headers_dump.join("\n")}`);
     targets = [];
     refresh = () => {
       this.logger.info(`Fetching data from '${this.url}'...`);
-      new Fetcher().fetch_data(this.url).then((data) => {
+      Fetcher.get().fetch_data(this.url).then((data) => {
         if (data) {
           this.targets.forEach((element) => {
             const fragment = Util.create_fragment(data);
@@ -2610,11 +2827,8 @@ ${headers_dump.join("\n")}`);
       super();
     }
     process = (fragment) => {
-      fragment.querySelectorAll(`[${ATTRIBUTE.MAIN.name}]`).forEach((element) => {
-        new Source(element, ATTRIBUTE.MAIN);
-      });
-      fragment.querySelectorAll(`[${ATTRIBUTE.SOURCE.name}]`).forEach((element) => {
-        new Source(element, ATTRIBUTE.SOURCE);
+      fragment.querySelectorAll(`[${KEYWORDS.MAIN.name}],[${KEYWORDS.SOURCE.name}]`).forEach((element) => {
+        new Source(element);
       });
     };
     postprocess = () => {
@@ -2744,7 +2958,7 @@ ${headers_dump.join("\n")}`);
       }
       if (this.url) {
         this.logger.info(`Fetching url '${this.url}'...`);
-        new Fetcher().fetch_data(this.url).then((data) => {
+        Fetcher.get().fetch_data(this.url).then((data) => {
           targets.forEach((t) => {
             if (data) {
               const fragment = Util.create_fragment(data);
@@ -2878,8 +3092,8 @@ ${headers_dump.join("\n")}`);
     };
   };
 
-  // src/processors/version_handler.ts
-  var VersionHandler = class extends AbstractProcessor {
+  // src/processors/version_processor.ts
+  var VersionProcessor = class extends AbstractProcessor {
     constructor() {
       super();
     }
@@ -2890,7 +3104,7 @@ ${headers_dump.join("\n")}`);
       if (document.querySelectorAll("[nd-version]").length == 0)
         return;
       fragment.querySelectorAll(`[nd-version]`).forEach((element) => {
-        this.logger.info(`Processing element`, element);
+        this.logger.info(`Processing element ${Util.truncate(element.outerHTML)}`);
         element.textContent = nd_core.version;
       });
     };
@@ -2906,8 +3120,12 @@ ${headers_dump.join("\n")}`);
   var Parameter2 = class {
     constructor(element) {
       this.element = element;
-      const data = (element.getAttribute(PARAMETER.PARAMS.name) || "").trim();
+      const data = (element.getAttribute(PARAMETERS.PARAMS.name) || "").trim();
       this.data = data ? Util.to_json(data) : {};
+      for (const key in this.data) {
+        this.data[key] = this.data[key].trim();
+      }
+      ;
     }
     data = {};
     get = (key, deflt = null) => {
@@ -2932,7 +3150,7 @@ ${headers_dump.join("\n")}`);
   var AbstractDialog = class {
     constructor(element, dialog_template) {
       this.dialog_template = dialog_template;
-      const template_id = (element.getAttribute(PARAMETER.DIALOG.name) || "").trim();
+      const template_id = (element.getAttribute(PARAMETERS.DIALOG.name) || "").trim();
       this.template = document.getElementById(template_id);
       this.params = new Parameter2(element);
       if (this.template) {
@@ -2942,19 +3160,21 @@ ${headers_dump.join("\n")}`);
       } else {
         logger5.error(`Template '${template_id}' not found, using default values.`);
       }
+      this.dismiss_url = this.params.get("dismiss_url", void 0);
     }
     uuid = Util.randomUUID();
     template;
     params;
     dialog_instance;
     return_value = "" /* NONE */;
+    dismiss_url;
     render = () => {
       let html = this.dialog_template;
       html = html.replace("$id", this.uuid);
       for (const key in this.params.all()) {
         html = html.replace("$" + key, this.params.get(key));
       }
-      this.dialog_instance = Util.open_layer(html, 1 /* MODAL */);
+      this.dialog_instance = Util.open_layer(html, 0 /* MODAL */);
       this.attach_event_handlers();
       this.dialog_instance?.setAttribute("open", "");
     };
@@ -2979,8 +3199,8 @@ ${headers_dump.join("\n")}`);
         <h5 class="nd-header">$title</h5>
         <div class="mb-1">$message</div>
         <div class="nd-footer">
-            <button nd-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
-            <button nd-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
+            <button data-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
+            <button data-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
         </div>
     </div>
 </dialog>`;
@@ -2988,7 +3208,8 @@ ${headers_dump.join("\n")}`);
     title: "Confirm dialog title (unset)",
     message: "Confirm message (unset)",
     accept_label: "?Confirm",
-    dismiss_label: "?Dismiss"
+    dismiss_label: "?Dismiss",
+    dismiss_url: ""
   };
   var DlgConfirm = class extends AbstractDialog {
     constructor(element) {
@@ -3002,6 +3223,7 @@ ${headers_dump.join("\n")}`);
     dismiss_btn;
     accept_handler = (e) => {
       this.return_value = "ACCEPT" /* ACCEPT */;
+      this.dismiss_url = void 0;
       this.close();
     };
     dismiss_handler = (e) => {
@@ -3009,8 +3231,8 @@ ${headers_dump.join("\n")}`);
       this.close();
     };
     attach_event_handlers = () => {
-      this.accept_btn = this.dialog_instance?.querySelector("[nd-accept]");
-      this.dismiss_btn = this.dialog_instance?.querySelector("[nd-dismiss]");
+      this.accept_btn = this.dialog_instance?.querySelector("[data-accept]");
+      this.dismiss_btn = this.dialog_instance?.querySelector("[data-dismiss]");
       this.accept_btn?.addEventListener("click", this.accept_handler);
       this.dismiss_btn?.addEventListener("click", this.dismiss_handler);
     };
@@ -3018,6 +3240,7 @@ ${headers_dump.join("\n")}`);
       this.accept_btn?.removeEventListener("click", this.accept_handler);
       this.dismiss_btn?.removeEventListener("click", this.dismiss_handler);
       this.dialog_instance?.remove();
+      this.dismiss_url ? Fetcher.get().redirect_to(this.dismiss_url) : {};
     };
   };
 
@@ -3028,7 +3251,7 @@ ${headers_dump.join("\n")}`);
         <h5 class="nd-header">$title</h5>
         <div class="mb-1">$message</div>
         <div class="nd-footer">
-            <button nd-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
+            <button data-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
         </div>
     </div>
 </dialog>`;
@@ -3055,7 +3278,7 @@ ${headers_dump.join("\n")}`);
       this.dialog_instance?.remove();
     };
     attach_event_handlers = () => {
-      this.accept_btn = this.dialog_instance?.querySelector("[nd-accept]");
+      this.accept_btn = this.dialog_instance?.querySelector("[data-accept]");
       this.accept_btn?.addEventListener("click", this.accept_handler);
     };
   };
@@ -3068,11 +3291,11 @@ ${headers_dump.join("\n")}`);
         <div class="mb-1">$message</div>
         <div class="nd-footer">
             <div class="col-6">
-                <input nd-confirm type="checkbox"><label><i class="bi bi-arrow-left ms-2 me-1"></i>$confirm_label</label>
+                <input data-confirm type="checkbox"><label><i class="bi bi-arrow-left ms-2 me-1"></i>$confirm_label</label>
             </div>
             <div class="col-6 text-end">
-                <button nd-accept class="btn btn-danger me-2" style="width: 7rem" disabled>$accept_label</button>
-                <button nd-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
+                <button data-accept class="btn btn-danger me-2" style="width: 7rem" disabled>$accept_label</button>
+                <button data-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
             <div>
         </div>
     </div>
@@ -3082,7 +3305,8 @@ ${headers_dump.join("\n")}`);
     message: "Confirm message (unset)",
     confirm_label: "Please confirm !",
     accept_label: "?Confirm",
-    dismiss_label: "?Dismiss"
+    dismiss_label: "?Dismiss",
+    dismiss_url: ""
   };
   var DlgSecureConfirm = class extends AbstractDialog {
     constructor(element) {
@@ -3097,6 +3321,7 @@ ${headers_dump.join("\n")}`);
     confirm_cb;
     accept_handler = () => {
       this.return_value = "ACCEPT" /* ACCEPT */;
+      this.dismiss_url = void 0;
       this.close();
     };
     dismiss_handler = () => {
@@ -3112,9 +3337,9 @@ ${headers_dump.join("\n")}`);
       }
     };
     attach_event_handlers = () => {
-      this.accept_btn = this.dialog_instance?.querySelector("[nd-accept]");
-      this.dismiss_btn = this.dialog_instance?.querySelector("[nd-dismiss]");
-      this.confirm_cb = this.dialog_instance?.querySelector("[nd-confirm]");
+      this.accept_btn = this.dialog_instance?.querySelector("[data-accept]");
+      this.dismiss_btn = this.dialog_instance?.querySelector("[data-dismiss]");
+      this.confirm_cb = this.dialog_instance?.querySelector("[data-confirm]");
       this.accept_btn?.addEventListener("click", this.accept_handler);
       this.dismiss_btn?.addEventListener("click", this.dismiss_handler);
       this.confirm_cb.addEventListener("click", this.confirm_cb_handler);
@@ -3124,6 +3349,7 @@ ${headers_dump.join("\n")}`);
       this.dismiss_btn?.removeEventListener("click", this.dismiss_handler);
       this.dismiss_btn?.removeEventListener("click", this.confirm_cb_handler);
       this.dialog_instance?.remove();
+      this.dismiss_url ? Fetcher.get().redirect_to(this.dismiss_url) : {};
     };
   };
 
@@ -3132,9 +3358,9 @@ ${headers_dump.join("\n")}`);
   var dialog_types = ["info", "confirm", "validate"];
   var DialogFactory = class {
     static create = (element) => {
-      if (!element.hasAttribute(PARAMETER.DIALOG.name))
+      if (!element.hasAttribute(PARAMETERS.DIALOG.name))
         return null;
-      const template_id = element.getAttribute(PARAMETER.DIALOG.name)?.trim();
+      const template_id = element.getAttribute(PARAMETERS.DIALOG.name)?.trim();
       if (!template_id) {
         logger6.error(`The dialog template must have a valid 'id'.`);
         return null;
@@ -3173,8 +3399,8 @@ ${headers_dump.join("\n")}`);
     // private confirm_dialog: DlgConfirm | null = null;
     constructor(element) {
       this.element = element;
-      const url = (element.getAttribute(PARAMETER.URL.name) || "").trim();
-      const target = (element.getAttribute(PARAMETER.TARGET.name) || "").trim();
+      const url = (element.getAttribute(PARAMETERS.URL.name) ?? "").trim();
+      const target = (element.getAttribute(PARAMETERS.TARGET.name) ?? "").trim();
       if (!Util.is_internal_url(url)) {
         logger7.error(`Invalid URL '${url}' on element '${element.outerHTML}'.`);
         return;
@@ -3212,15 +3438,14 @@ ${headers_dump.join("\n")}`);
   };
 
   // src/processors/nav_processor.ts
-  var NavProcessor = class _NavProcessor extends AbstractProcessor {
-    static definition = ATTRIBUTE.NAV;
+  var NavProcessor = class extends AbstractProcessor {
     constructor() {
       super();
     }
     process(fragment) {
-      const elements = fragment.querySelectorAll(`[${_NavProcessor.definition.name}]`);
+      const elements = fragment.querySelectorAll(`[${KEYWORDS.NAV.name}]`);
       elements.forEach((element) => {
-        this.logger.info(`Processing '${_NavProcessor.definition.name}' on element`, element);
+        this.logger.info(`Processing '${KEYWORDS.NAV.name}' on element`, element);
         if (check_fragment(element) == "SUCCESS" /* SUCCESS */) {
           new Nav(element);
         }
@@ -3232,15 +3457,14 @@ ${headers_dump.join("\n")}`);
 
   // src/processors/test_processor.ts
   var logger8 = new Logger("Test");
-  var TestProcessor = class _TestProcessor extends AbstractProcessor {
-    static definition = ATTRIBUTE.TEST;
+  var TestProcessor = class extends AbstractProcessor {
     constructor() {
       super();
     }
     process(fragment) {
-      const elements = fragment.querySelectorAll(`[${_TestProcessor.definition.name}]`);
+      const elements = fragment.querySelectorAll(`[${KEYWORDS.TEST.name}]`);
       elements.forEach((element) => {
-        this.logger.info(`Processing '${_TestProcessor.definition.name}' on element`, element);
+        this.logger.info(`Processing '${KEYWORDS.TEST.name}' on element`, element);
         if (check_fragment(element) == "SUCCESS" /* SUCCESS */) {
           new Parameter2(element);
         }
@@ -3250,17 +3474,298 @@ ${headers_dump.join("\n")}`);
     }
   };
 
+  // src/modules/link.ts
+  var import_json55 = __toESM(require_dist());
+  var Link = class _Link {
+    constructor(element) {
+      this.element = element;
+      this.logger = _Link.LOGGER;
+      this.url = "";
+      this.dialog = null;
+      this.action = null;
+      this.targets = "";
+      this.resets = "";
+      this.dialog_template_id = "";
+      this.confirm_template_id = "";
+      const has_href = element.hasAttribute("href");
+      const has_nd_url = element.hasAttribute("nd-url");
+      const has_action = element.hasAttribute("nd-action");
+      const has_reset = element.hasAttribute("nd-reset");
+      const has_dialog = element.hasAttribute("nd-dialog");
+      const has_confim = element.hasAttribute("nd-confirm");
+      const handler_tracker2 = new HandlerTracker();
+      const errors = [];
+      if (has_href && has_nd_url) {
+        errors.push(`Use 'href' or 'nd-url', not both !`, element);
+      }
+      if (!(has_href || has_nd_url || has_action || has_reset || has_dialog)) {
+        errors.push(`No 'nd-url', 'nd-action', 'nd-reset' or 'nd-dialog' is defined on element`, element);
+      }
+      if (errors.length > 0) {
+        errors.forEach((error) => this.logger.error(error));
+        return;
+      }
+      ["A", "BUTTON"].includes(this.element.tagName) ? {} : this.element.style.cursor = "pointer";
+      const href = element.getAttribute("href");
+      this.url = href || element.getAttribute("nd-url") || "";
+      this.action = has_action ? new Action(element) : null;
+      element.removeAttribute("data-ndtrack");
+      if (has_confim) {
+        const template_id = element.getAttribute("nd-confirm") || "";
+        console.log("Confirm template ID", template_id);
+        const template = document.getElementById(template_id);
+        if (!template) {
+          this.logger.error(`Template with 'id=${template_id}' not found.`);
+          return;
+        }
+        this.confirm_template_id = template_id;
+      }
+      if (has_dialog) {
+        const template_id = element.getAttribute("nd-dialog") || "";
+        console.log("Dialog template ID", template_id);
+        const template = document.getElementById(template_id);
+        if (!template) {
+          this.logger.error(`Template with 'id=${template_id}' not found.`);
+          return;
+        }
+        this.dialog_template_id = template_id;
+      }
+      this.targets = element.getAttribute("nd-target") || "";
+      this.resets = element.getAttribute("nd-reset") || "";
+      handler_tracker2.add_listener(element, "click", this.click_handler);
+      this.logger.info(`New Link created (${element.getAttribute("data-ndtrack")}).`);
+    }
+    static LOGGER = new Logger("Link", true);
+    logger;
+    dialog;
+    url;
+    action;
+    targets;
+    resets;
+    dialog_template_id;
+    confirm_template_id;
+    click_handler = async (event) => {
+      event.preventDefault();
+      let do_proceed = true;
+      let nd_params = this.element.getAttribute("nd-params");
+      let payload = {};
+      if (nd_params) {
+        nd_params = nd_params.replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/g, '"$2": ');
+        console.log("P2", nd_params);
+        payload = import_json55.default.parse(nd_params);
+        console.log("P3", payload);
+      }
+      if (do_proceed) {
+        if (this.action && this.action.when == "before")
+          this.action.excecute();
+        Util.get_targets(this.resets).forEach((element) => {
+          element.dispatchEvent(new CustomEvent(ND_EVENTS.RESET));
+        });
+        if (this.url) {
+          Fetcher.get().fetch_data(this.url, payload).then((data) => {
+            if (data) {
+              Util.get_targets(this.targets).forEach((t) => {
+                if (t.tagName === "INPUT") {
+                  t.value = data;
+                } else {
+                  const fragment = Util.create_fragment(data);
+                  Util.insert_fragment(t, fragment, false, true);
+                }
+              });
+            }
+            if (this.action && this.action.when == "after")
+              this.action.excecute(data ?? void 0);
+          });
+        }
+      }
+    };
+    static create_link = (element, url) => {
+      element.setAttribute("nd-link", "");
+      element.setAttribute("nd-url", url);
+      return new _Link(element);
+    };
+    static clear_link = (element) => {
+      element.removeAttribute("nd-link");
+      element.removeAttribute("nd-url");
+      element.removeAttribute("data-ndtrack");
+      element.style.cursor = "";
+    };
+  };
+
+  // src/modules/select.ts
+  var logger9 = new Logger("Select");
+  var Select = class {
+    constructor(element) {
+      this.element = element;
+      const dflt = element.getAttribute(PARAMETERS.DEFAULT.name);
+      this.nd_default = dflt ? `<option>${dflt}</option>` : "";
+      this.nd_default ? element.innerHTML = this.nd_default : {};
+      this.nd_selected = element.getAttribute(PARAMETERS.SELECTED.name) ?? "";
+      let selector = element.getAttribute(PARAMETERS.TARGET.name) ?? "";
+      let targets = Util.get_targets(selector);
+      targets.forEach((target) => {
+        target.hidden = target.hasAttribute(PARAMETERS.SHOWFOR.name) || target.hasAttribute(PARAMETERS.HIDEFOR.name);
+        logger9.info(`Found target '${Util.truncate(target.outerHTML)}'`);
+        this.targets.push(target);
+      });
+      selector = element.getAttribute(PARAMETERS.INFORM.name) ?? "";
+      targets = Util.get_targets(selector);
+      targets.forEach((target) => {
+        if (target.tagName !== "SELECT") {
+          logger9.error(`The 'nd-inform' attribute may reference <select> elements only, not '${target.tagName}' elements.`, target);
+        } else {
+          logger9.info(`Found inform target '${target.outerHTML}'`);
+          this.inform.push(target);
+        }
+      });
+      const handler_tracker2 = new HandlerTracker();
+      handler_tracker2.add_listener(element, "change", this.update_targets);
+      handler_tracker2.add_listener(element, ND_EVENTS.CHANGE, this.on_nd_inform);
+      handler_tracker2.add_listener(element, ND_EVENTS.RESET, this.reset);
+      const nd_options_url = element.getAttribute("nd-url");
+      if (nd_options_url) {
+        logger9.info(`Getting select option from url '${nd_options_url}'.`);
+        Fetcher.get().fetch_data(nd_options_url).then((data) => {
+          const fragment = Util.create_fragment(data ?? "<option>Error</option>");
+          Util.insert_fragment(element, fragment);
+          this.setup();
+          return;
+        });
+      }
+      this.setup();
+    }
+    id;
+    targets = [];
+    inform = [];
+    nd_default;
+    nd_selected;
+    reset = () => {
+      this.element.selectedIndex = 0;
+      this.update_targets();
+    };
+    setup = () => {
+      const nd_selected = this.element.querySelector(`option[value="${this.nd_selected}"]`);
+      nd_selected ? this.element.value = nd_selected.value : this.element.selectedIndex = 0;
+      this.element.dispatchEvent(new Event("change"));
+    };
+    send_event = () => {
+      if (!this.inform)
+        return;
+      const option = this.element.options[this.element.selectedIndex];
+      const value = option.getAttribute("value") || null;
+      const url = option.getAttribute("nd-url") || null;
+      const payload = { source: this.id, value, url };
+      this.inform.forEach((e) => {
+        e.dispatchEvent(new CustomEvent(ND_EVENTS.CHANGE, { detail: payload }));
+      });
+    };
+    on_nd_inform = (event) => {
+      const detail = event.detail;
+      if (!detail.url) {
+        Util.clear_node(this.element);
+        if (this.nd_default) {
+          const fragment = Util.create_fragment(this.nd_default);
+          Util.insert_fragment(this.element, fragment, false, true);
+        }
+        this.update_targets();
+      } else {
+        Fetcher.get().fetch_data(detail.url).then((data) => {
+          data = this.nd_default ? this.nd_default + data : data ?? "";
+          Util.clear_node(this.element);
+          const fragment = Util.create_fragment(data ?? "");
+          Util.insert_fragment(this.element, fragment, false, true);
+          this.update_targets();
+        });
+      }
+    };
+    update_targets = () => {
+      if (this.element.selectedIndex < 0)
+        return;
+      const option = this.element.options[this.element.selectedIndex];
+      const value = option.getAttribute("value") ?? "";
+      const url = option.getAttribute(PARAMETERS.URL.name);
+      this.targets.forEach((target) => {
+        const target_html = Util.truncate(target.outerHTML, 80);
+        const nd_show_for = target.getAttribute(PARAMETERS.SHOWFOR.name);
+        const nd_hide_for = target.getAttribute(PARAMETERS.HIDEFOR.name);
+        const nd_follow = target.hasAttribute(PARAMETERS.FOLLOW.name);
+        const nd_sync = target.hasAttribute(PARAMETERS.SYNC.name);
+        const nd_activate = target.hasAttribute(PARAMETERS.ACTIVATE.name);
+        if ([nd_follow, nd_sync, nd_activate].filter(Boolean).length > 1) {
+          logger9.error(`'${PARAMETERS.SYNC.name}', '${PARAMETERS.FOLLOW.name}' and '${PARAMETERS.ACTIVATE.name}' are mutually exclusive.  Element : ${target_html}`);
+          return;
+        }
+        const nd_url = target.getAttribute(PARAMETERS.URL.name);
+        const has_nd_url = nd_url ? true : false;
+        const show_targets = nd_show_for ? nd_show_for.split(" ") : [];
+        const hide_targets = nd_hide_for ? nd_hide_for.split(" ") : [];
+        if (nd_activate) {
+          target.innerHTML = value ?? "";
+          url ? Link.create_link(target, url) : Link.clear_link(target);
+          Util.refresh(target);
+        }
+        if (nd_sync) {
+          target.hidden != target.hidden;
+          if (has_nd_url && value) {
+            const url2 = `${nd_url}/${value}`;
+            Fetcher.get().fetch_data(url2).then((data) => {
+              console.log("DATA", data);
+              const fragment = Util.create_fragment(data ?? "");
+              Util.insert_fragment(target, fragment);
+            });
+          } else {
+            target.innerText = value ? value : "";
+          }
+          target.hidden != target.hidden;
+        }
+        if (nd_follow && value) {
+          Fetcher.get().fetch_data(value).then((data) => {
+            console.log("DATA", data);
+            const fragment = Util.create_fragment(data ?? "");
+            Util.insert_fragment(target, fragment, false, true);
+          });
+        }
+        if (show_targets.includes("*")) {
+          target.hidden = value ? false : true;
+          show_targets.splice(show_targets.indexOf("*"), 1);
+        }
+        if (hide_targets.includes("*")) {
+          target.hidden = value ? true : false;
+          hide_targets.splice(hide_targets.indexOf("*"), 1);
+        }
+        if (show_targets.length)
+          target.hidden = !show_targets.includes(value);
+        if (hide_targets.length)
+          target.hidden = hide_targets.includes(value);
+      });
+      this.send_event();
+    };
+  };
+
+  // src/processors/select_handler.ts
+  var SelectHandler = class extends AbstractProcessor {
+    constructor() {
+      super();
+    }
+    process = (fragment) => {
+      fragment.querySelectorAll(`[${KEYWORDS.SELECT.name}]`).forEach((element) => {
+        this.logger.info(`Processing element ${Util.truncate(element.outerHTML, 80)}`);
+        const xx = new Select(element);
+      });
+    };
+    postprocess = () => {
+    };
+  };
+
   // src/main/main.ts
   var initialize_document = () => {
     const styles = `<style id="nd-style">${ND_STYLES}</style>`;
-    const containers = `<!-- Notification, dialog and busy containers --><div ${CONTAINERS.NOTIFICATIONS}></div><div ${CONTAINERS.DIALOGS}></div><div ${CONTAINERS.BUSY}><div nd-spinner></div></div>`;
     let fragment = Util.create_fragment(styles);
     document.querySelector("head")?.lastElementChild?.after(fragment);
-    fragment = Util.create_fragment(containers);
-    document.querySelector("body")?.firstElementChild?.before(fragment);
   };
-  console.info(`INFO | Core | ${PROGNAME} : initializing...`);
   Core.init().then((core) => {
+    console.info(BANNER);
+    console.info(`INFO | Core | ${PROGNAME} : initializing...`);
     nd_core = core;
   });
   var on_dom_loaded = () => {
@@ -3274,9 +3779,12 @@ ${headers_dump.join("\n")}`);
       PollProcessor.getInstance(),
       TimerTracker.getInstance(),
       HandlerTracker.getInstance(),
-      VersionHandler.getInstance(),
+      VersionProcessor.getInstance(),
       NavProcessor.getInstance(),
-      TestProcessor.getInstance()
+      EnvironmentProcessor.getInstance(),
+      TestProcessor.getInstance(),
+      ContextProcessor.getInstance(),
+      SelectHandler.getInstance()
     ];
     Util.refresh(document.body);
   };

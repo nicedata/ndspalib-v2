@@ -1,21 +1,19 @@
-const { BaseHandler } = require("./base_handler.js");
-const { Select } = require("../modules/select.js");
+import { AbstractProcessor } from "./abstract_processor";
+import { Select } from "../modules/select";
+import { Util } from "../modules/util";
+import { check_fragment, KEYWORDS } from "../syntax/syntax";
 
-exports.SelectHandler = class SelectHandler extends BaseHandler {
+export class SelectHandler extends AbstractProcessor {
     constructor() {
-        super("SelectHandler");
-        // Singleton
-        if (!!SelectHandler._instance) {
-            return SelectHandler._instance;
-        }
-        SelectHandler._instance = this;
+        super();
     }
 
-    process = (fragment) => {
-        fragment.querySelectorAll("[nd-select]").forEach((element) => {
-            new Select(element);
+    process = (fragment: Element) => {
+        fragment.querySelectorAll(`[${KEYWORDS.SELECT.name}]`).forEach((element) => {
+            this.logger.info(`Processing element ${Util.truncate(element.outerHTML, 80)}`);
+            const xx = new Select(element as HTMLSelectElement);
         });
     };
 
-    postprocess = () => {};
+    postprocess = () => { };
 };

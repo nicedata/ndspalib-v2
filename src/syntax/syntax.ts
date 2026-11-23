@@ -3,125 +3,195 @@
  */
 
 import { CheckResult } from "../main/types";
-import { Logger } from "../modules/logger";
 import { Util } from "../modules/util";
 
-const NONE: Parameter[] = [];
+import { FragmentCheckResult, Keyword, Parameter, Syntax } from "./types";
 
-export class Parameter {
-    constructor(public name: string) { }
-}
 
-export class Attribute {
-    constructor(public name: string, public unique: boolean, public parameters: Parameter[], public mandatory: Parameter[], public requires_one_of: Parameter[]) { }
-}
+const TRUNCATE_LENGTH = 80;
+const WILDCARD = '*';
 
-export class PARAMETER {
-    static readonly URL = new Parameter('nd-url');
-    static readonly TARGET = new Parameter('nd-target');
-    static readonly KEY = new Parameter('nd-key');
-    static readonly INTERVAL = new Parameter('nd-interval');
-    static readonly ACTION = new Parameter('nd-action');
-    static readonly PARAMS = new Parameter('nd-params');
-    static readonly DIALOG = new Parameter('nd-dialog');
+export const KEYWORDS: Record<string, Keyword> = {
+    // Main keywords
+    NONE: { name: '', tags: [WILDCARD] },
+    MAIN: { name: 'nd-main', tags: [WILDCARD] },
+    SOURCE: { name: 'nd-source', tags: [WILDCARD] },
+    NAV: { name: 'nd-nav', tags: [WILDCARD] },
+    VERSION: { name: 'nd-version', tags: [WILDCARD] },
+    POLL: { name: 'nd-poll', tags: [WILDCARD] },
+    CONTEXT: { name: 'nd-context', tags: ['template'] },
+    SELECT: { name: 'nd-select', tags: ['select'] },
+    // TODO : check if used !
+    ENV: { name: 'nd-env', tags: [WILDCARD] },
+    TEST: { name: 'nd-test', tags: [WILDCARD] },
+};
 
-    static readonly enum: Parameter[] = [this.URL, this.TARGET, this.KEY, this.INTERVAL, this.ACTION, this.PARAMS, this.DIALOG];
-}
+export const PARAMETERS: Record<string, Parameter> = {
+    // Parameter appearing beside of a keyword
+    INFORM: { name: 'nd-inform', standalone: false, needsvalue: true },
+    TARGET: { name: 'nd-target', standalone: false, needsvalue: true },
+    KEY: { name: 'nd-key', standalone: false, needsvalue: true },
+    INTERVAL: { name: 'nd-interval', standalone: false, needsvalue: true },
+    ACTION: { name: 'nd-action', standalone: false, needsvalue: true },
+    PARAMS: { name: 'nd-params', standalone: false, needsvalue: true },
+    DIALOG: { name: 'nd-dialog', standalone: false, needsvalue: true },
+    SELECTED: { name: 'nd-selected', standalone: false, needsvalue: true },
+    DEFAULT: { name: 'nd-default', standalone: false, needsvalue: true },
+    PARAMETER: { name: 'nd-params', standalone: false, needsvalue: true },
+    // Standalone parameters (no keyword needed)
+    URL: { name: 'nd-url', standalone: true, needsvalue: true },
+    SHOWFOR: { name: 'nd-show-for', standalone: true, needsvalue: true },
+    HIDEFOR: { name: 'nd-hide-for', standalone: true, needsvalue: true },
+    FOLLOW: { name: 'nd-follow', standalone: true, needsvalue: false },
+    SYNC: { name: 'nd-sync', standalone: true, needsvalue: false },
+    ACTIVATE: { name: 'nd-activate', standalone: true, needsvalue: false },
+};
 
-export class ATTRIBUTE {
-    static readonly MAIN = new Attribute('nd-main', true, [PARAMETER.URL, PARAMETER.TARGET], [PARAMETER.URL], NONE);
-    static readonly SOURCE = new Attribute('nd-source', false, [PARAMETER.URL, PARAMETER.TARGET], [PARAMETER.URL], NONE);
-    static readonly ENV = new Attribute('nd-env', false, [PARAMETER.KEY], [PARAMETER.KEY], NONE);
-    static readonly VERSION = new Attribute('nd-version', false, NONE, NONE, NONE);
-    static readonly POLL = new Attribute('nd-poll', false, [PARAMETER.URL, PARAMETER.TARGET, PARAMETER.INTERVAL, PARAMETER.ACTION], NONE, [PARAMETER.URL, PARAMETER.ACTION]);
-    static readonly NAV = new Attribute('nd-nav', false, [PARAMETER.URL, PARAMETER.TARGET, PARAMETER.DIALOG, PARAMETER.PARAMS], [PARAMETER.URL, PARAMETER.TARGET], NONE);
-    static readonly TEST = new Attribute('nd-test', false, [PARAMETER.PARAMS], [PARAMETER.PARAMS], NONE);
+const SYNTAX: Syntax[] = [
+    // Keyword syntax
+    { keyword: KEYWORDS.VERSION, required: [], optional: [] },
+    { keyword: KEYWORDS.CONTEXT, required: [], optional: [] },
+    { keyword: KEYWORDS.MAIN, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.SOURCE, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.NAV, required: [PARAMETERS.URL, PARAMETERS.TARGET], optional: [PARAMETERS.DIALOG, PARAMETERS.PARAMETER] },
+    { keyword: KEYWORDS.SELECT, required: [PARAMETERS.TARGET], optional: [PARAMETERS.URL, PARAMETERS.SELECTED, PARAMETERS.INFORM, PARAMETERS.DEFAULT] },
+    // Standalone parameters
+    { keyword: KEYWORDS.NONE, required: [], optional: [PARAMETERS.SHOWFOR, PARAMETERS.HIDEFOR, PARAMETERS.FOLLOW, PARAMETERS.SYNC, PARAMETERS.URL, PARAMETERS.ACTIVATE] },
+];
 
-    static readonly enum: Attribute[] = [this.MAIN, this.SOURCE, this.ENV, this.VERSION, this.POLL, this.NAV, this.TEST];
-    static readonly attribute_list = `[${ATTRIBUTE.enum.map((e) => { return e.name; }).join("|")}]`;
-}
 
-const logger = new Logger('FragmentCheck');
-class FragmentCheckResult {
-    errors: string[] = [];
-    warnings: string[] = [];
+// Define keyword and parameter sets
+const KEYWORD_SET = new Set(Object.values(KEYWORDS).flatMap(k => k.name));
+const PARAMETER_SET = new Set(Object.values(PARAMETERS).flatMap(p => p.name));
 
-    has_errors = (): boolean => {
-        return this.errors.length > 0;
+const find_nd_elements = (fragment: Element): Element[] => {
+    return [...fragment.querySelectorAll('*')].filter(el => [...el.attributes].some(attr => attr.name.startsWith('nd-')));
+};
+
+
+class SyntaxCheck {
+    private static readonly fragment_check_result = new FragmentCheckResult();
+
+    private static find_syntax = (element: Element): Syntax | undefined => {
+        let result = SYNTAX.find((item) => item.keyword === KEYWORDS.NONE);
+
+        for (const s of SYNTAX) {
+            if (element.hasAttribute(s.keyword.name)) {
+                result = s;
+                break;
+            }
+        };
+        return result;
     };
 
-    has_warnings = (): boolean => {
-        return this.warnings.length > 0;
+    private static find_nd_attributes = (element: Element): string[] => {
+        return [...element.attributes].filter(attr => attr.name.startsWith('nd-')).flatMap(a => a.name);
     };
 
-    log_all = (): void => {
-        this.errors.forEach(e => {
-            logger.error(e);
-        });
-        this.warnings.forEach(e => {
-            logger.warn(e);
-        });
-
-    };
-}
-
-export const check_fragment = (fragment: Element): CheckResult => {
-    const result = new FragmentCheckResult();
-
-    const check_attribute_unicity = (element: Element): void => {
-        const has_attr: boolean[] = [];
-        ATTRIBUTE.enum.forEach(attr => {
-            has_attr.push(element.hasAttribute(attr.name));
-        });
-
-        if (has_attr.filter((v) => v).length > 1) {
-            result.errors.push(`Multiple attributes are present on element '${Util.compress(element.outerHTML)}' ! Use one and only one of ${ATTRIBUTE.attribute_list} !`);
-        }
+    public static clear_errors = () => {
+        this.fragment_check_result.clear();
     };
 
-    // Main function
-    ATTRIBUTE.enum.forEach(attribute => {
-        const elements = fragment.querySelectorAll(`[${attribute.name}]`);
+    public static dump_errors_and_warnings = (): void => {
+        this.fragment_check_result.log_all();
+    };
 
-        if (attribute.unique && elements.length > 1) {
-            result.errors.push(`There can only be one '${attribute.name}' on the page !`);
-        }
+    public static has_errors = (): boolean => {
+        return this.fragment_check_result.has_errors() || this.fragment_check_result.has_warnings();
+    };
 
-        elements.forEach(element => {
-            const html = Util.compress(element.outerHTML);
-            const parameters: Parameter[] = [];
-            logger.info(`Checking attribute '${attribute.name}' on element '${html}'.`);
-            // Check attribute unicity
-            check_attribute_unicity(element);
+    public static check_element = (element: Element): void => {
+        const element_html = Util.truncate(element.outerHTML, TRUNCATE_LENGTH);
+        const nd_attributes = this.find_nd_attributes(element);
 
-            // Check parameters
-            attribute.parameters.forEach(parameter => {
-                const mandatory = attribute.mandatory.includes(parameter);
-                const qualifier = mandatory ? 'mandatory' : 'optional';
-                logger.info(`Checking ${qualifier} parameter '${parameter.name}' of attribute '${attribute.name}'.`);
+        // Check nd-keywords
+        const kwds = [...new Set(nd_attributes).intersection(KEYWORD_SET)];
 
-                // Mandatory parameters
-                if (mandatory && !element.hasAttribute(parameter.name)) {
-                    result.errors.push(`Mandatory attribute '${parameter.name}' not found on element '${html}' !`);
-                }
 
-                // Parameter value
-                if (element.hasAttribute(parameter.name)) {
-                    parameters.push(parameter);
-                    const value = element.getAttribute(parameter.name);
-                    if (!value) {
-                        result.errors.push(`Attribute '${parameter.name}' on element '${html}' has no value !`);
+        switch (kwds.length) {
+            case 0:
+                // No keywords at all
+                break;
+            case 1:
+                // Single keyword
+                const kwd_name = kwds[0];
+                const kwd = Object.values(KEYWORDS).find(k => k.name === kwd_name);
+                // Check if nd-keyword is on the right tag
+                if (kwd?.tags) {
+                    if (!kwd.tags.includes(WILDCARD) && !kwd.tags.includes(element.tagName.toLowerCase())) {
+                        this.fragment_check_result.add_error(`The ${kwd.name} keyword should sit on following tag(s) : ${kwd.tags.join(', ')}`);
                     }
                 }
+                // Check if attribute has a value (not allowed !)
+                const attr = element.getAttribute(kwd_name);
+                if (attr)
+                    this.fragment_check_result.add_warning(`An nd-keyword (${kwd_name}) cannot have a value. Element : ${element_html}`);
+                break;
+            default:
+                // Multiple keywords
+                this.fragment_check_result.add_error(`Too many nd-keywords found. Element : ${element_html}`);
+        }
 
-            });
-            // Required parameters
-            if (attribute.requires_one_of.length && !attribute.requires_one_of.some(r => parameters.includes(r))) {
-                result.errors.push(`At least one of [${attribute.requires_one_of.join('|')}] is required on element '${html}'!`);
+
+        // Find a syntax description for this element
+        const syntax = this.find_syntax(element);
+        if (!syntax) {
+            this.fragment_check_result.add_warning(`No syntax check found for element ${element_html}`);
+            return;
+        }
+
+        // Check all nd-attributes
+        nd_attributes.forEach(attr => {
+            const attribute_id_valid = KEYWORD_SET.has(attr) || PARAMETER_SET.has(attr);
+            if (!attribute_id_valid) {
+                this.fragment_check_result.add_error(`Unknown attribute ${attr} in element ${element_html}`);
+            }
+
+            if (kwds.length > 0 || attr === syntax.keyword.name) return;
+
+            const attribute = syntax.optional.find(a => a.name === attr) || syntax.required.find(a => a.name === attr);
+            if (!attribute) {
+                this.fragment_check_result.add_error(`Attribute ${attr} cannot be used on element ${element_html}`);
+            } else if (!attribute.standalone)
+                this.fragment_check_result.add_error(`Attribute ${attr} is not standalone and therfore cannot be used on element ${element_html}`);
+        });
+
+
+        // Check required parameters
+        syntax.required.forEach(required => {
+            if (!element.hasAttribute(required.name)) {
+                this.fragment_check_result.add_error(`Mandatory parameter ${required.name} is missing on element ${element_html}`);
+            } else if (required.needsvalue && !element.getAttribute(required.name)?.trim()) {
+                this.fragment_check_result.add_error(`Parameter ${required.name} has no value on element ${element_html}`);
             }
         });
+
+        // Check optional parameters
+        syntax.optional.forEach(optional => {
+            if (element.hasAttribute(optional.name) && optional.needsvalue && !element.getAttribute(optional.name)?.trim()) {
+                this.fragment_check_result.add_error(`Parameter ${optional.name} has no value on element ${element_html}`);
+            }
+        });
+    };
+}
+
+
+
+export const check_fragment = (fragment: Element): CheckResult => {
+    SyntaxCheck.clear_errors();
+
+    // Check all elements bearing nd-attributes and check them
+    find_nd_elements(fragment).forEach(element => {
+        SyntaxCheck.check_element(element);
     });
-    result.log_all();
-    return result.has_errors() ? CheckResult.FAILURE : CheckResult.SUCCESS;
+
+    // Dump errors
+    SyntaxCheck.dump_errors_and_warnings();
+
+    return SyntaxCheck.has_errors() ? CheckResult.FAILURE : CheckResult.SUCCESS;
 };
+
+
+
+
 

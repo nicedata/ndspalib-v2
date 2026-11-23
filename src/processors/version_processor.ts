@@ -12,9 +12,10 @@
  *    nd-version: no data
  */
 
+import { Util } from "../modules/util";
 import { AbstractProcessor } from "./abstract_processor";
 
-export class VersionHandler extends AbstractProcessor {
+export class VersionProcessor extends AbstractProcessor {
     constructor() {
         super();
     }
@@ -27,7 +28,7 @@ export class VersionHandler extends AbstractProcessor {
 
         // Process this fragment
         fragment.querySelectorAll(`[nd-version]`).forEach((element) => {
-            this.logger.info(`Processing element`, element);
+            this.logger.info(`Processing element ${Util.truncate(element.outerHTML)}`);
             element.textContent = nd_core.version;
         });
     };

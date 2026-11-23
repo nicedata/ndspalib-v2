@@ -96,7 +96,7 @@ export class Poll {
         // Fetch if an URL is present
         if (this.url) {
             this.logger.info(`Fetching url '${this.url}'...`);
-            new Fetcher().fetch_data(this.url).then((data) => {
+            Fetcher.get().fetch_data(this.url).then((data) => {
                 targets.forEach((t) => {
                     if (data) {
                         const fragment = Util.create_fragment(data);

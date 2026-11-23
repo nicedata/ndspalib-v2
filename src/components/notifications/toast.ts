@@ -4,7 +4,7 @@ import { AbstractNotification } from "./abstract_notification";
 const HTML_TEMPLATE = `
 <div nd-notification id="$id" class="nd-toast" role="alert">
     <div class="nd-content">
-        <span nd-close class="nd-close">&times;</span>
+        <span data-close class="nd-close">&times;</span>
         <h5 class="nd-toast-header">$title</h5>
         <div class="nd-toast-content">$message</div>
     </div>

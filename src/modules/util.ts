@@ -1,4 +1,4 @@
-import { ND_EVENTS, CONTAINERS, OVERLAY_MODE } from "../main/constants";
+import { ND_EVENTS, OVERLAY_MODE } from "../main/constants";
 import { check_fragment } from "../syntax/syntax";
 import { Logger } from "./logger";
 import { v4 as uuidv4 } from 'uuid';
@@ -7,11 +7,9 @@ import JSON5 from 'json5';
 const logger = new Logger("Util", true);
 
 export class Util {
-
     static randomUUID = (): string => {
         return uuidv4();
     };
-
 
     static to_json = (data: string): object => {
         let result: object = {};
@@ -24,15 +22,15 @@ export class Util {
         }
     };
 
-    static is_internal_url = (href: string): boolean => {
+    static is_internal_url = (url: string): boolean => {
         // Élimine les chaînes vides, les ancres pures et les liens javascript/téléphone/mail
-        if (!href || href.startsWith('#') || /^(javascript|mailto|tel):/i.test(href)) {
+        if (!url || url.startsWith('#') || /^(javascript|mailto|tel):/i.test(url)) {
             return true;
         }
 
         try {
             // Utilise window.location.origin comme base pour résoudre automatiquement les liens relatifs
-            const targetUrl = new URL(href, window.location.origin);
+            const targetUrl = new URL(url, window.location.origin);
 
             // Compare l'origine (protocole + domaine + port)
             return targetUrl.origin === window.location.origin;
@@ -106,7 +104,7 @@ export class Util {
      *
      *  @return: an array of elements matching the selector, or an array with the element (ifempty) if querySelectorAll returns nothing.
      */
-    static get_targets = (selector: string, ifempty: Element | null = null): Element[] => {
+    static get_targets = (selector: string, ifempty: HTMLElement | null = null): HTMLElement[] => {
         // Check selector (must be a string)
         if (typeof selector !== "string") return ifempty ? [ifempty] : [];
 
@@ -254,6 +252,7 @@ export class Util {
         return result;
     };
 
+
     static open_layer = (html: string, mode: typeof OVERLAY_MODE[keyof typeof OVERLAY_MODE]): HTMLElement | null => {
         let container = null;
         const fragment = Util.create_fragment(html);
@@ -261,14 +260,21 @@ export class Util {
         // Get the DOM target
         switch (mode) {
             case OVERLAY_MODE.MODAL:
-                container = document.querySelector(`[${CONTAINERS.DIALOGS}]`);
+                container = document.querySelector(`.nd-dialogs`);
+                if (!container) {
+                    container = document.createElement('div');
+                    container.classList.add('nd-dialogs');
+                    document.body.prepend(container);
+                }
                 break;
             case OVERLAY_MODE.TRANSIENT:
-                container = document.querySelector(`[${CONTAINERS.NOTIFICATIONS}]`);
+                container = document.querySelector(`.nd-notifications`);
+                if (!container) {
+                    container = document.createElement('div');
+                    container.classList.add('nd-notifications');
+                    document.body.prepend(container);
+                }
                 break;
-            default:
-                logger.error(`Unknown layer mode : '${mode}'.`);
-                return null;
         }
 
         if (!container)
@@ -296,3 +302,4 @@ export class Util {
         return result;
     };
 };
+

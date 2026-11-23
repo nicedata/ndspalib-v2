@@ -1,4 +1,4 @@
-import { PARAMETER } from "../../syntax/syntax";
+import { PARAMETERS } from "../../syntax/syntax";
 import { Logger } from "../../modules/logger";
 import { DlgConfirm } from "./confirm_dialog";
 import { DlgInfo } from "./info_dialog";
@@ -12,13 +12,13 @@ export class DialogFactory {
 
     static create = (element: Element): DlgConfirm | DlgInfo | DlgSecureConfirm | null => {
 
-        if (!element.hasAttribute(PARAMETER.DIALOG.name))
+        if (!element.hasAttribute(PARAMETERS.DIALOG.name))
             return null;
 
 
 
         // Get the template id from th nd-dialog attribute
-        const template_id = element.getAttribute(PARAMETER.DIALOG.name)?.trim();
+        const template_id = element.getAttribute(PARAMETERS.DIALOG.name)?.trim();
 
         // No template, no dialog
         if (!template_id) {

@@ -15,17 +15,17 @@ export class Download {
         this.html = this.preview ? "" : `<a style="display: none" href="${this.href}", download="${out_filename}"></a>`;
     }
 
-    _cleanup = () => {
+    private cleanup = () => {
         logger.info("Cleanup", this.element ? this.element : "");
         URL.revokeObjectURL(this.href);
         this.element ? this.element.remove() : {};
     };
 
-    show = () => {
+    public launch = (): void => {
         if (this.preview) {
             logger.info("Preview mode !");
             window.open(this.href, "_blank");
-            this._cleanup();
+            this.cleanup();
             return;
         }
 
@@ -42,7 +42,7 @@ export class Download {
 
         // Remove the link element after 100 msec
         setTimeout(() => {
-            this._cleanup();
+            this.cleanup();
         }, 100);
     };
 };

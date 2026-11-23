@@ -7,7 +7,7 @@
 | nd-poll    | Defines a poller which executes at given intervals | nd-url, nd-target, nd-action, nd-interval |
 | nd-env     |                                                    | nd-key                                    |
 | nd-version | Access to the ndspalib version string              | -                                         |
-| nd-nav     | Intra site navigation element (link)               | nd-url, nd-target, nd-confirm             |
+| nd-nav     | Intra site navigation element (link)               | nd-url, nd-target, nd-dialog              |
 | nd-link    | Active element (link)                              | nd-url, nd-target, nd-action, nd-confirm  |
 | nd-test    | Testing purposes !                                 |                                           |
 
@@ -32,7 +32,7 @@ Provide navigation within the web application. In the SPA concept, navigation do
 - [x] force usage of the `nd-url` parameter (discard `href` processing )
 
 ```html
-<a nd-nav nd-url="/logout" nd-target="#targetdiv" nd-confirm="confirm" nd-params="{message: 'Please confirm !'}">Logout</a>
+<a nd-nav nd-url="/logout" nd-target="#targetdiv" nd-dialog="confirm" nd-params="{message: 'Please confirm  !'}">Logout</a>
 ```
 
 

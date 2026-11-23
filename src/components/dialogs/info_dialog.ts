@@ -8,7 +8,7 @@ const HTML_TEMPLATE = `
         <h5 class="nd-header">$title</h5>
         <div class="mb-1">$message</div>
         <div class="nd-footer">
-            <button nd-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
+            <button data-accept class="btn btn-danger me-2" style="width: 7rem">$accept_label</button>
         </div>
     </div>
 </dialog>`;
@@ -45,7 +45,7 @@ export class DlgInfo extends AbstractDialog {
 
 
     attach_event_handlers = (): void => {
-        this.accept_btn = this.dialog_instance?.querySelector('[nd-accept]') as HTMLButtonElement;
+        this.accept_btn = this.dialog_instance?.querySelector('[data-accept]') as HTMLButtonElement;
         this.accept_btn?.addEventListener('click', this.accept_handler);
     };
 }

@@ -3,7 +3,7 @@ import { DialogResult } from "../../main/types";
 import { Logger } from "../../modules/logger";
 import { Parameter } from "../../modules/parameter";
 import { Util } from "../../modules/util";
-import { PARAMETER } from "../../syntax/syntax";
+import { PARAMETERS } from "../../syntax/syntax";
 
 const logger = new Logger('Dialog');
 
@@ -13,9 +13,11 @@ export abstract class AbstractDialog {
     protected params!: Parameter;
     protected dialog_instance!: HTMLDialogElement;
     protected return_value: DialogResult = DialogResult.NONE;
+    protected dismiss_url?: string;
 
-    constructor(element: Element, private dialog_template: string) {
-        const template_id = (element.getAttribute(PARAMETER.DIALOG.name) || '').trim();
+
+    protected constructor(element: Element, private dialog_template: string) {
+        const template_id = (element.getAttribute(PARAMETERS.DIALOG.name) || '').trim();
 
         // Get the template and parameters
         this.template = document.getElementById(template_id) as HTMLTemplateElement;
@@ -29,6 +31,7 @@ export abstract class AbstractDialog {
         } else {
             logger.error(`Template '${template_id}' not found, using default values.`);
         }
+        this.dismiss_url = this.params.get('dismiss_url', undefined);
     }
 
     abstract close(): void;
@@ -49,8 +52,10 @@ export abstract class AbstractDialog {
         // Display in browser as modal
         this.dialog_instance = Util.open_layer(html, OVERLAY_MODE.MODAL) as HTMLDialogElement;
 
+        // Attach event handlers
         this.attach_event_handlers();
 
+        // Show the dialog by setting the 'open' attribute
         this.dialog_instance?.setAttribute('open', '');
     };
 
@@ -59,7 +64,7 @@ export abstract class AbstractDialog {
         return new Promise<DialogResult>(async (resolve) => {
             logger.info(`Executing dialog '${this.uuid}'...`);
 
-            // Show dialog
+            // Render the dialog in the browser
             this.render();
 
             logger.info("Awaiting an action...");

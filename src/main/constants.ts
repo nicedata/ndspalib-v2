@@ -1,12 +1,8 @@
-/**
- * Constants
- */
-
-
-export const _INFOS = {
+const _INFOS = {
     PROGNAME: "NDS SPA utilities",
     VERSION: "1.0.17-dev",
     AUTHOR: "Martin Mohnhaupt <martin.mohnhaupt@etik.com>",
+    COMPANY: "Nice Data Systems, https://www.nicedata.ch",
     LICENCE: "MIT License, https://mit-license.org/",
     INSPIREDBY: {
         HTMX: "HTMX : https://htmx.org/",
@@ -14,18 +10,34 @@ export const _INFOS = {
     },
 };
 
+export const BANNER = `
+ ██████   █████ ██████████    █████████  ███████████    █████████   █████       █████ ███████████ 
+░░██████ ░░███ ░░███░░░░███  ███░░░░░███░░███░░░░░███  ███░░░░░███ ░░███       ░░███ ░░███░░░░░███
+ ░███░███ ░███  ░███   ░░███░███    ░░░  ░███    ░███ ░███    ░███  ░███        ░███  ░███    ░███
+ ░███░░███░███  ░███    ░███░░█████████  ░██████████  ░███████████  ░███        ░███  ░██████████ 
+ ░███ ░░██████  ░███    ░███ ░░░░░░░░███ ░███░░░░░░   ░███░░░░░███  ░███        ░███  ░███░░░░░███
+ ░███  ░░█████  ░███    ███  ███    ░███ ░███         ░███    ░███  ░███      █ ░███  ░███    ░███
+ █████  ░░█████ ██████████  ░░█████████  █████        █████   █████ ███████████ █████ ███████████ 
+ 
+ A library that makes it easy to develop single-page web applications.
+ 
+ Copyright : ${_INFOS.AUTHOR} 
+ Company   : ${_INFOS.COMPANY}  
+ License   : ${_INFOS.LICENCE}
+ Version   : ${_INFOS.VERSION}
+`;
+
 
 
 // Overlay modes
 export enum OVERLAY_MODE {
-    NONE,
     MODAL, // Modal dialogs
     TRANSIENT, // Alerts, toasts, ....
 };
 
 
-export const INFOS = _INFOS;
-export const PROGNAME = `${INFOS.PROGNAME} ${INFOS.VERSION}`;
+// export const INFOS = _INFOS;
+export const PROGNAME = `${_INFOS.PROGNAME} ${_INFOS.VERSION}`;
 export const VERSION = _INFOS.VERSION;
 export const TARGET_NONE = ":none:";
 
@@ -60,13 +72,6 @@ export const ND_EVENTS = {
     ZONE: "nd:zone",
     ITEM: "nd:item",
     SORT: "nd:sort",
-};
-
-// Containers for various notifications
-export const CONTAINERS = {
-    DIALOGS: "nd-dialog-container",
-    NOTIFICATIONS: "nd-notification-container",
-    BUSY: "nd-busy-container",
 };
 
 export const NO_CONTEXT = "::none::";
@@ -105,7 +110,7 @@ export const ND_STYLES = `
         --nd-border-color: lightgray solid 1px;
     }
 
-    [nd-notification-container] {
+    .nd-notifications {
         position: absolute;
         left: 50%;
         top: 0;
@@ -116,7 +121,7 @@ export const ND_STYLES = `
         z-index: 9000;
     }
 
-    [nd-busy-container] {
+    .nd-busy {
         position: fixed;
         top: 0;
         left: 0;
@@ -130,7 +135,7 @@ export const ND_STYLES = `
         cursor: progress;
     }  
 
-    [nd-spinner] {
+    .nd-spinner {
         display: block;
         position: absolute;
         z-index: 1000;

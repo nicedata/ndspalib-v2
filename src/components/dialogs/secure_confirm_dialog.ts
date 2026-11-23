@@ -1,5 +1,6 @@
 import { AbstractDialog } from "./abstract_dialog";
 import { DialogResult } from "../../main/types";
+import { Fetcher } from "../../modules/fetcher";
 
 const HTML_TEMPLATE = `
 <dialog id="$id" class="nd-modal" role="document">
@@ -8,11 +9,11 @@ const HTML_TEMPLATE = `
         <div class="mb-1">$message</div>
         <div class="nd-footer">
             <div class="col-6">
-                <input nd-confirm type="checkbox"><label><i class="bi bi-arrow-left ms-2 me-1"></i>$confirm_label</label>
+                <input data-confirm type="checkbox"><label><i class="bi bi-arrow-left ms-2 me-1"></i>$confirm_label</label>
             </div>
             <div class="col-6 text-end">
-                <button nd-accept class="btn btn-danger me-2" style="width: 7rem" disabled>$accept_label</button>
-                <button nd-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
+                <button data-accept class="btn btn-danger me-2" style="width: 7rem" disabled>$accept_label</button>
+                <button data-dismiss class="btn btn-primary" style="width: 7rem">$dismiss_label</button>
             <div>
         </div>
     </div>
@@ -24,6 +25,7 @@ const DEFAULTS: Record<string, string> = {
     confirm_label: 'Please confirm !',
     accept_label: '?Confirm',
     dismiss_label: '?Dismiss',
+    dismiss_url: '',
 };
 
 export class DlgSecureConfirm extends AbstractDialog {
@@ -42,6 +44,7 @@ export class DlgSecureConfirm extends AbstractDialog {
 
     private accept_handler = () => {
         this.return_value = DialogResult.ACCEPT;
+        this.dismiss_url = undefined;
         this.close();
     };
 
@@ -61,9 +64,9 @@ export class DlgSecureConfirm extends AbstractDialog {
 
 
     attach_event_handlers = (): void => {
-        this.accept_btn = this.dialog_instance?.querySelector('[nd-accept]') as HTMLButtonElement;
-        this.dismiss_btn = this.dialog_instance?.querySelector('[nd-dismiss]') as HTMLButtonElement;
-        this.confirm_cb = this.dialog_instance?.querySelector('[nd-confirm]') as HTMLInputElement;
+        this.accept_btn = this.dialog_instance?.querySelector('[data-accept]') as HTMLButtonElement;
+        this.dismiss_btn = this.dialog_instance?.querySelector('[data-dismiss]') as HTMLButtonElement;
+        this.confirm_cb = this.dialog_instance?.querySelector('[data-confirm]') as HTMLInputElement;
         this.accept_btn?.addEventListener('click', this.accept_handler);
         this.dismiss_btn?.addEventListener('click', this.dismiss_handler);
         this.confirm_cb.addEventListener('click', this.confirm_cb_handler);
@@ -75,6 +78,8 @@ export class DlgSecureConfirm extends AbstractDialog {
         this.dismiss_btn?.removeEventListener('click', this.dismiss_handler);
         this.dismiss_btn?.removeEventListener('click', this.confirm_cb_handler);
         this.dialog_instance?.remove();
+
+        this.dismiss_url ? Fetcher.get().redirect_to(this.dismiss_url) : {};
     };
 
 }

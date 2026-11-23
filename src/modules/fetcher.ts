@@ -1,8 +1,8 @@
-import { ND_EVENTS, VERSION, CONTAINERS } from "../main/constants";
 import { Logger } from "./logger";
-import { EnvironmentProcessor } from "../processors/environment_processor";
+import { ND_EVENTS, VERSION } from "../main/constants";
 import JSON5 from 'json5';
 import { Util } from "./util";
+import { BusyIndicator } from "./busy_indicator";
 
 export class Fetcher {
     static ALLOW_ORIGIN = "http://localhost:8000";
@@ -12,31 +12,20 @@ export class Fetcher {
 
     logger = new Logger("Fetcher", true);
     events: CustomEvent[] = [];
-    busy_indicator: HTMLElement | null = document.querySelector(`[${CONTAINERS.BUSY}]`);
-    environment_processor: EnvironmentProcessor = EnvironmentProcessor.getInstance();
 
     // Singleton constructor !
-    constructor() {
-        if (!!Fetcher._instance) {
+    private constructor() {
+        if (Fetcher._instance) {
             return Fetcher._instance;
         }
         Fetcher._instance = this;
     }
 
-    static get = () => {
+    public static get = () => {
         return new Fetcher();
     };
 
-    set_busy = () => {
-        this.busy_indicator ? {} : this.busy_indicator = document.querySelector(`[${CONTAINERS.BUSY}]`);
-        this.busy_indicator ? (this.busy_indicator.style.display = "block") : {};
-    };
-
-    set_idle = () => {
-        this.busy_indicator ? (this.busy_indicator.style.display = "none") : {};
-    };
-
-    _process_headers = (headers: Headers) => {
+    private process_headers = (headers: Headers) => {
         let headers_dump: string[] = [];
         headers.forEach((v, k) => {
             headers_dump.push(`'${k}'->'${v}'`);
@@ -59,7 +48,7 @@ export class Fetcher {
     };
 
     // Dispatch received events !
-    _process_events = (payload: Blob) => {
+    private process_events = (payload: Blob) => {
         this.logger.info(`Processing events...`);
         this.events.forEach((event) => {
             this.logger.info(`Event: `, event);
@@ -90,26 +79,23 @@ export class Fetcher {
         return payload;
     };
 
-    async execute_fetch(request: Request) {
+    public async execute_fetch(request: Request): Promise<string | undefined> {
         const url = request.url;
         this.events = [];
         let status = null;
         let data = null;
 
         // Add our own headers
-        request.headers.append("X-Nd-Version", `"${VERSION}"`);
-        request.headers.append("X-Nd-Url", `"${request.url}"`);
-        request.headers.append("X-Nd-Environment", `${JSON.stringify(this.environment_processor.get_environment())}`);
-        // ! request.headers.append("X-Nd-Context", `${JSON.stringify(nd_core.context_handler.get_current_context())}`);
-        // CORS
-        // request.headers.append("Access-Control-Allow-Origin", Fetcher.ALLOW_ORIGIN);
-        // request.headers.append("Access-Control-Allow-Methods", Fetcher.ALLOW_METHODS);
-        // request.headers.append("Access-Control-Allow-Credentials", true);
-        // Trigger before fetch event
+        if (Util.is_internal_url(request.url)) {
+            request.headers.append("X-Nd-Version", `"${VERSION}"`);
+            request.headers.append("X-Nd-Url", `"${request.url}"`);
+            request.headers.append("X-Nd-Environment", `${JSON.stringify(nd_core.get_environment())}`);
+            request.headers.append("X-Nd-Context", `${JSON.stringify(nd_core.get_context())}`);
+        }
         document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_BEFORE, { detail: { url: url, data: null, status: status } }));
 
         try {
-            this.set_busy();
+            BusyIndicator.set();
             // ! const response = await fetch(request, { smode: "cors" });
             const response = await fetch(request);
             this.logger.info(`Response status: ${response.status}`);
@@ -117,33 +103,33 @@ export class Fetcher {
             if (!response.ok) {
                 document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url: url, data: null, status: response.status } }));
                 this.logger.error(`Response status: ${response.status}`);
-                this.set_idle();
-                return null;
+                BusyIndicator.reset();
+                return;
             }
 
             // Process the response headers
-            this._process_headers(response.headers);
+            this.process_headers(response.headers);
 
             // Get the response payload as a Blob
             const payload = await response.blob();
             this.logger.info(`Result is of type '${payload.type}'.`);
 
             // Process events
-            const data = await this._process_events(payload).text();
+            const data = await this.process_events(payload).text();
 
             document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_AFTER, { detail: { url: url, data: data, status: status } }));
-            this.set_idle();
+            BusyIndicator.reset();
             return data;
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             document.dispatchEvent(new CustomEvent(ND_EVENTS.FETCH_ERROR, { detail: { url: url, data: message, status: status } }));
             this.logger.error(`Error on url '${url}':  ${message}`);
         }
-        this.set_idle();
-        return null;
+        BusyIndicator.reset();
+        return;
     }
 
-    async send_form(form: HTMLFormElement, operation = "accept") {
+    private async send_form(form: HTMLFormElement, operation = "accept") {
         const formdata = new FormData(form);
         formdata.append("nd-form_id", form.dataset.ndtrack ?? "");
         formdata.append("nd-form_operation", operation);
@@ -155,7 +141,7 @@ export class Fetcher {
         return await this.execute_fetch(request);
     }
 
-    async post_form_data(formdata: FormData, url: string) {
+    private async post_form_data(formdata: FormData, url: string) {
         const request = new Request(url, {
             method: "post",
             body: formdata,
@@ -163,37 +149,42 @@ export class Fetcher {
         return await this.execute_fetch(request);
     }
 
-    _redirect_to = async (url: string) => {
-        if (!url.startsWith("/")) {
+    public redirect_to = (url: string): void => {
+        // Check if URL is site internal
+        if (!Util.is_internal_url(url)) {
             this.logger.error(`Cannot navigate to '${url}'. Only relative URLs are allowed !`);
             return;
         }
 
-        if (url === "/") {
+        // Check if URL ist the site root 
+        if (Util.is_root_url(url)) {
             this.logger.error(`Navigation to '/' is not allowed !`);
             return;
         }
 
-        // ! if (!nd.main_container) {
-        //     this.logger.error(`Cannot navigate to '${url}'. No main container defined !`);
-        //     return;
-        // }
+        // Check if an app container exists
+        if (!nd_core.main_container) {
+            this.logger.error(`Cannot navigate to '${url}'. No main container defined !`);
+            return;
+        }
 
+        // Perform the request
         const request = new Request(url);
         this.logger.info(`Fetching '${url}' in a 'get' request.`);
-        const data = await this.execute_fetch(request);
-        if (data) {
-            // ! nd.util.clear_node(nd.main_container);
-            // ! const fragment = nd.util.create_fragment(data);
-            // ! nd.util.insert_fragment(nd.main_container, fragment, false, true);
-        }
-        document.dispatchEvent(new CustomEvent(ND_EVENTS.NAVIGATION, { detail: { url: url, data: data } }));
+        this.execute_fetch(request).then(data => {
+            if (data) {
+                Util.clear_node(nd_core.main_container);
+                const fragment = Util.create_fragment(data);
+                Util.insert_fragment(nd_core.main_container, fragment, false, true);
+                document.dispatchEvent(new CustomEvent(ND_EVENTS.NAVIGATION, { detail: { url: url, data: data } }));
+            }
+        });
     };
 
     /**
      * fetch_data - fetch data from server as text
      */
-    async fetch_data(url: string, payload: Record<string, any> = {}) {
+    public async fetch_data(url: string, payload: Record<string, any> = {}) {
         // Default method is GET !
         let [_method, _url] = ["get", url];
 
@@ -209,7 +200,7 @@ export class Fetcher {
         }
 
         if (_method === "nav") {
-            await this._redirect_to(_url);
+            await this.redirect_to(_url);
             return;
         }
 
@@ -221,10 +212,4 @@ export class Fetcher {
 
         return await this.execute_fetch(request);
     }
-
-    redirect = async (url: string) => {
-        if (!url) return;
-        url.startsWith("nav::") ? {} : (url = "nav::" + url);
-        return await this.fetch_data(url);
-    };
 };

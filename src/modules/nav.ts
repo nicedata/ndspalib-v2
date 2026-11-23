@@ -1,8 +1,6 @@
 import { DialogFactory } from "../components/dialogs/dialog_factory";
-import { Alert } from "../components/notifications/alert";
-import { Toast } from "../components/notifications/toast";
-import { AlertSeverity, DialogResult } from "../main";
-import { PARAMETER } from "../syntax/syntax";
+import { DialogResult } from "../main/types";
+import { PARAMETERS } from "../syntax/syntax";
 import { HandlerTracker } from "../trackers/handler_tracker";
 import { Fetcher } from "./fetcher";
 import { Logger } from "./logger";
@@ -18,8 +16,8 @@ export class Nav {
     // private confirm_dialog: DlgConfirm | null = null;
 
     constructor(private element: Element) {
-        const url = (element.getAttribute(PARAMETER.URL.name) || '').trim();
-        const target = (element.getAttribute(PARAMETER.TARGET.name) || '').trim();
+        const url = (element.getAttribute(PARAMETERS.URL.name) ?? '').trim();
+        const target = (element.getAttribute(PARAMETERS.TARGET.name) ?? '').trim();
 
         // Check URL
         if (!Util.is_internal_url(url)) {
