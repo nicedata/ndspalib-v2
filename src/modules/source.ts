@@ -25,7 +25,7 @@ export class Source {
 
         if (element.hasAttribute(KEYWORDS.SOURCE.name)) {
             // Add an event listener for reset events
-            new HandlerTracker().add_listener(this.element as HTMLElement, ND_EVENTS.RESET, this.refresh);
+            HandlerTracker.getInstance().add_listener(this.element as HTMLElement, ND_EVENTS.RESET, this.refresh);
         }
 
         this.refresh();

@@ -10,7 +10,7 @@ export class SelectHandler extends AbstractProcessor {
 
     process = (fragment: Element) => {
         fragment.querySelectorAll(`[${KEYWORDS.SELECT.name}]`).forEach((element) => {
-            this.logger.info(`Processing element ${Util.truncate(element.outerHTML, 80)}`);
+            this.logger.info(`Processing element ${Util.truncate(element.outerHTML)}`);
             const xx = new Select(element as HTMLSelectElement);
         });
     };

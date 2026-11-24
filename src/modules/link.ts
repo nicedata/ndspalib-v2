@@ -5,6 +5,7 @@ import JSON5 from 'json5';
 import { Util } from "./util";
 import { ND_EVENTS } from "../main/constants";
 import { Fetcher } from "./fetcher";
+import { KEYWORDS, PARAMETERS } from "../syntax/syntax";
 
 export class Link {
     static LOGGER = new Logger("Link", true);
@@ -35,7 +36,7 @@ export class Link {
         const has_dialog = element.hasAttribute("nd-dialog");
         const has_confim = element.hasAttribute("nd-confirm");
 
-        const handler_tracker = new HandlerTracker();
+        const handler_tracker = HandlerTracker.getInstance();
 
         const errors = [];
 
@@ -63,7 +64,7 @@ export class Link {
         this.action = has_action ? new Action(element) : null;
 
         // If the element already has an data-ndtrack attribute, remove it to give the listener tracker a chance to update
-        element.removeAttribute("data-ndtrack");
+        element.removeAttribute(PARAMETERS.TRACKID.name);
 
         // Process nd-confirm
         if (has_confim) {
@@ -97,14 +98,14 @@ export class Link {
         }
 
         // Get the target(s)
-        this.targets = element.getAttribute("nd-target") || '';
+        this.targets = element.getAttribute(PARAMETERS.TARGET.name) || '';
 
         // Get the reset target(s)
-        this.resets = element.getAttribute("nd-reset") || '';
+        this.resets = element.getAttribute('nd-reset') || '';
 
         // Add a tracked 'click' handler
         handler_tracker.add_listener(element as HTMLElement, "click", this.click_handler);
-        this.logger.info(`New Link created (${element.getAttribute("data-ndtrack")}).`);
+        this.logger.info(`New Link created (${element.getAttribute(PARAMETERS.TRACKID.name)}).`);
     }
 
     click_handler = async (event: Event) => {
@@ -141,8 +142,8 @@ export class Link {
                         // Process data if any
                         if (data) {
                             Util.get_targets(this.targets).forEach((t) => {
-                                if (t.tagName === "INPUT") {
-                                    (t as HTMLInputElement).value = data;
+                                if (t instanceof HTMLInputElement) {
+                                    t.value = data;
                                 } else {
                                     const fragment = Util.create_fragment(data);
                                     // Replace target fragment and refresh it
@@ -158,15 +159,15 @@ export class Link {
     };
 
     static create_link = (element: Element, url: string) => {
-        element.setAttribute("nd-link", "");
-        element.setAttribute("nd-url", url);
+        element.setAttribute(KEYWORDS.NAV.name, "");
+        element.setAttribute(PARAMETERS.URL.name, url);
         return new Link(element);
     };
 
     static clear_link = (element: Element) => {
-        element.removeAttribute("nd-link");
-        element.removeAttribute("nd-url");
-        element.removeAttribute("data-ndtrack");
+        element.removeAttribute(KEYWORDS.NAV.name);
+        element.removeAttribute(PARAMETERS.URL.name);
+        element.removeAttribute(PARAMETERS.TRACKID.name);
         (element as HTMLElement).style.cursor = "";
     };
 };

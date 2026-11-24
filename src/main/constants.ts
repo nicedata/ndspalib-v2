@@ -28,6 +28,11 @@ export const BANNER = `
 `;
 
 
+// General
+export const WILDCARD: string = '*';
+export const TRUNCATE_LENGTH = 100;
+export const ND_PREFIX = 'nd-';
+export const DATA_PREFIX = 'data-';
 
 // Overlay modes
 export enum OVERLAY_MODE {
@@ -78,28 +83,6 @@ export const NO_CONTEXT = "::none::";
 export const SELF = "::self::";
 export const TOAST_DELAY_MS = 3000;
 export const POLL_DEFAULT_INTERVAL_MS = 10000;
-
-// Element definitions
-const ND_POLL = {
-    tag: "nd-poll",
-    required: ["nd-url", "nd-action"],
-    optional: [
-        { attribute: "nd-interval", default: POLL_DEFAULT_INTERVAL_MS },
-        { attribute: "nd-target", default: SELF },
-    ],
-};
-
-const ND_LINK = {
-    tag: "nd-link",
-    required: ["href", "nd-url", "nd-action", "nd-dialog"],
-    optional: [
-        { attribute: "nd-target", default: SELF },
-        { attribute: "nd-dialog", default: null },
-    ],
-};
-
-export const DEFINITIONS = [ND_POLL, ND_LINK];
-
 
 /**
  * Custom NDS Styles       

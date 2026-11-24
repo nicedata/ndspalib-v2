@@ -79,9 +79,9 @@ export class ContextProcessor extends AbstractProcessor {
                             targets.forEach(t => { t.remove(); });
                             break;
                         case 'reset':
-                            targets.forEach(t => { (t as HTMLFormElement).reset(); });
                             targets.forEach(t => {
-                                t.dispatchEvent(new CustomEvent(ND_EVENTS.RESET));
+                                t instanceof HTMLFormElement ? t.reset() : {};
+                                // t.dispatchEvent(new CustomEvent(ND_EVENTS.RESET));
                             });
                             break;
                     }

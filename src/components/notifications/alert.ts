@@ -3,7 +3,7 @@ import { AlertSeverity } from "../../main/types";
 
 
 const HTML_TEMPLATE = `
-<div nd-notification id="$id" class="nd-notification bg-$severity-subtle">
+<div class="nd-notification bg-$severity-subtle">
     <div class="nd-content">
         <span data-close class="nd-close">&times;</span>
         $message

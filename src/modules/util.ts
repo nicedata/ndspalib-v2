@@ -1,4 +1,4 @@
-import { ND_EVENTS, OVERLAY_MODE } from "../main/constants";
+import { ND_EVENTS, OVERLAY_MODE, TRUNCATE_LENGTH } from "../main/constants";
 import { check_fragment } from "../syntax/syntax";
 import { Logger } from "./logger";
 import { v4 as uuidv4 } from 'uuid';
@@ -83,7 +83,7 @@ export class Util {
         }
     };
 
-    static truncate(input: string, len = 50) {
+    static truncate(input: string, len = TRUNCATE_LENGTH) {
         if (typeof input !== "string") return input;
         const text = input.trim().replace(/\s+/g, " ").split(" ").join(" ").trim();
         return text.length > len ? `${text.substring(0, len)}...` : text;
@@ -137,13 +137,13 @@ export class Util {
     }
 
     static refresh(fragment: Element) {
+        const x = check_fragment(fragment);
+
         // Step 1 : process the fragment (update handlers)
         for (const [_, handler] of Object.entries(nd_core.handlers)) {
             logger.info(`Process by ${handler.constructor.name}`);
             handler.process(fragment);
         }
-
-        check_fragment(fragment);
 
         // Step 2 : postprocess the (update handlers)
         for (const [_, handler] of Object.entries(nd_core.handlers)) {

@@ -1436,6 +1436,10 @@ var nd_core = (() => {
  License   : ${_INFOS.LICENCE}
  Version   : ${_INFOS.VERSION}
 `;
+  var WILDCARD = "*";
+  var TRUNCATE_LENGTH = 100;
+  var ND_PREFIX = "nd-";
+  var DATA_PREFIX = "data-";
   var PROGNAME = `${_INFOS.PROGNAME} ${_INFOS.VERSION}`;
   var VERSION = _INFOS.VERSION;
   var ND_EVENTS = {
@@ -1789,11 +1793,8 @@ var nd_core = (() => {
   };
 
   // src/syntax/syntax.ts
-  var TRUNCATE_LENGTH = 80;
-  var WILDCARD = "*";
   var KEYWORDS = {
     // Main keywords
-    NONE: { name: "", tags: [WILDCARD] },
     MAIN: { name: "nd-main", tags: [WILDCARD] },
     SOURCE: { name: "nd-source", tags: [WILDCARD] },
     NAV: { name: "nd-nav", tags: [WILDCARD] },
@@ -1805,10 +1806,10 @@ var nd_core = (() => {
     ENV: { name: "nd-env", tags: [WILDCARD] },
     TEST: { name: "nd-test", tags: [WILDCARD] }
   };
+  var NO_KEYWORD = { name: "no-keyword", tags: [WILDCARD] };
   var PARAMETERS = {
     // Parameter appearing beside of a keyword
     INFORM: { name: "nd-inform", standalone: false, needsvalue: true },
-    TARGET: { name: "nd-target", standalone: false, needsvalue: true },
     KEY: { name: "nd-key", standalone: false, needsvalue: true },
     INTERVAL: { name: "nd-interval", standalone: false, needsvalue: true },
     ACTION: { name: "nd-action", standalone: false, needsvalue: true },
@@ -1819,30 +1820,49 @@ var nd_core = (() => {
     PARAMETER: { name: "nd-params", standalone: false, needsvalue: true },
     // Standalone parameters (no keyword needed)
     URL: { name: "nd-url", standalone: true, needsvalue: true },
+    TARGET: { name: "nd-target", standalone: true, needsvalue: true },
     SHOWFOR: { name: "nd-show-for", standalone: true, needsvalue: true },
     HIDEFOR: { name: "nd-hide-for", standalone: true, needsvalue: true },
     FOLLOW: { name: "nd-follow", standalone: true, needsvalue: false },
     SYNC: { name: "nd-sync", standalone: true, needsvalue: false },
-    ACTIVATE: { name: "nd-activate", standalone: true, needsvalue: false }
+    ACTIVATE: { name: "nd-activate", standalone: true, needsvalue: false },
+    HIDERESET: { name: "nd-hide-reset", standalone: true, needsvalue: false },
+    // Standalone data- parameters
+    TRACKID: { name: "data-ndtrack", standalone: true, needsvalue: false },
+    NAME: { name: "data-name", standalone: false, needsvalue: true },
+    SHOW: { name: "data-show", standalone: false, needsvalue: true },
+    HIDE: { name: "data-hide", standalone: false, needsvalue: true },
+    DISABLE: { name: "data-disable", standalone: false, needsvalue: true },
+    ENABLE: { name: "data-enable", standalone: false, needsvalue: true },
+    REMOVE: { name: "data-remove", standalone: false, needsvalue: true },
+    RESET: { name: "data-reset", standalone: false, needsvalue: true }
   };
   var SYNTAX = [
     // Keyword syntax
-    { keyword: KEYWORDS.VERSION, required: [], optional: [] },
-    { keyword: KEYWORDS.CONTEXT, required: [], optional: [] },
-    { keyword: KEYWORDS.MAIN, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
-    { keyword: KEYWORDS.SOURCE, required: [PARAMETERS.URL], optional: [PARAMETERS.TARGET] },
-    { keyword: KEYWORDS.NAV, required: [PARAMETERS.URL, PARAMETERS.TARGET], optional: [PARAMETERS.DIALOG, PARAMETERS.PARAMETER] },
-    { keyword: KEYWORDS.SELECT, required: [PARAMETERS.TARGET], optional: [PARAMETERS.URL, PARAMETERS.SELECTED, PARAMETERS.INFORM, PARAMETERS.DEFAULT] },
-    // Standalone parameters
-    { keyword: KEYWORDS.NONE, required: [], optional: [PARAMETERS.SHOWFOR, PARAMETERS.HIDEFOR, PARAMETERS.FOLLOW, PARAMETERS.SYNC, PARAMETERS.URL, PARAMETERS.ACTIVATE] }
+    { keyword: KEYWORDS.VERSION, requires: [], requires_all: false, optional: [] },
+    { keyword: KEYWORDS.MAIN, requires: [PARAMETERS.URL], requires_all: true, optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.SOURCE, requires: [PARAMETERS.URL], requires_all: true, optional: [PARAMETERS.TARGET] },
+    { keyword: KEYWORDS.NAV, requires: [PARAMETERS.URL, PARAMETERS.TARGET], requires_all: true, optional: [PARAMETERS.DIALOG, PARAMETERS.PARAMETER] },
+    { keyword: KEYWORDS.SELECT, requires: [PARAMETERS.TARGET, PARAMETERS.INFORM], requires_all: false, optional: [PARAMETERS.URL, PARAMETERS.SELECTED, PARAMETERS.DEFAULT] },
+    { keyword: KEYWORDS.CONTEXT, requires: [PARAMETERS.NAME], requires_all: true, optional: [PARAMETERS.SHOW, PARAMETERS.HIDE, PARAMETERS.ENABLE, PARAMETERS.DISABLE, PARAMETERS.REMOVE, PARAMETERS.RESET] }
   ];
+  var DEFAULT_SYNTAX = { keyword: NO_KEYWORD, requires: [], requires_all: false, optional: [PARAMETERS.SHOWFOR, PARAMETERS.HIDEFOR, PARAMETERS.HIDERESET, PARAMETERS.FOLLOW, PARAMETERS.SYNC, PARAMETERS.TARGET, PARAMETERS.URL, PARAMETERS.ACTIVATE] };
   var KEYWORD_SET = new Set(Object.values(KEYWORDS).flatMap((k) => k.name));
   var PARAMETER_SET = new Set(Object.values(PARAMETERS).flatMap((p) => p.name));
+  var VOCABULARY_SET = KEYWORD_SET.union(PARAMETER_SET);
   var find_nd_elements = (fragment) => {
-    return [...fragment.querySelectorAll("*")].filter((el) => [...el.attributes].some((attr) => attr.name.startsWith("nd-")));
+    const elements = [...fragment.querySelectorAll("*")];
+    elements.push(fragment);
+    return elements.filter((el) => [...el.attributes].some((attr) => attr.name.startsWith(ND_PREFIX)));
   };
   var SyntaxCheck = class {
     static fragment_check_result = new FragmentCheckResult();
+    /**
+     * Find a syntax that applies to a given element.
+     * 
+     * @param element The element that is to be checked.
+     * @returns The syntax to be checked or the NONE syntax
+     */
     static find_syntax = (element) => {
       let result = SYNTAX.find((item) => item.keyword === KEYWORDS.NONE);
       for (const s of SYNTAX) {
@@ -1854,8 +1874,14 @@ var nd_core = (() => {
       ;
       return result;
     };
-    static find_nd_attributes = (element) => {
-      return [...element.attributes].filter((attr) => attr.name.startsWith("nd-")).flatMap((a) => a.name);
+    /**
+     * Find all nd- attributes on an element.
+     * 
+     * @param element The element to be analyzed.
+     * @returns 
+     */
+    static find_nd_parameters = (element) => {
+      return [...element.attributes].filter((attr) => attr.name.startsWith(ND_PREFIX) || attr.name.startsWith(DATA_PREFIX)).flatMap((a) => a.name);
     };
     static clear_errors = () => {
       this.fragment_check_result.clear();
@@ -1866,63 +1892,79 @@ var nd_core = (() => {
     static has_errors = () => {
       return this.fragment_check_result.has_errors() || this.fragment_check_result.has_warnings();
     };
-    static check_element = (element) => {
-      const element_html = Util.truncate(element.outerHTML, TRUNCATE_LENGTH);
-      const nd_attributes = this.find_nd_attributes(element);
-      const kwds = [...new Set(nd_attributes).intersection(KEYWORD_SET)];
-      switch (kwds.length) {
-        case 0:
-          break;
-        case 1:
-          const kwd_name = kwds[0];
-          const kwd = Object.values(KEYWORDS).find((k) => k.name === kwd_name);
-          if (kwd?.tags) {
-            if (!kwd.tags.includes(WILDCARD) && !kwd.tags.includes(element.tagName.toLowerCase())) {
-              this.fragment_check_result.add_error(`The ${kwd.name} keyword should sit on following tag(s) : ${kwd.tags.join(", ")}`);
-            }
-          }
-          const attr = element.getAttribute(kwd_name);
-          if (attr)
-            this.fragment_check_result.add_warning(`An nd-keyword (${kwd_name}) cannot have a value. Element : ${element_html}`);
-          break;
-        default:
-          this.fragment_check_result.add_error(`Too many nd-keywords found. Element : ${element_html}`);
-      }
-      const syntax = this.find_syntax(element);
-      if (!syntax) {
-        this.fragment_check_result.add_warning(`No syntax check found for element ${element_html}`);
+    /**
+     * Check element keyword.
+     * 
+     * Rules :
+     * 
+     * - There may be only one keyword. 
+     * - The keyword must sit on the right HTML element.
+     * 
+     * @param element The element to check.
+     */
+    static check_keywords = (element) => {
+      const element_html = Util.truncate(element.outerHTML);
+      const parameters = this.find_nd_parameters(element);
+      const keywords = [...new Set(parameters).intersection(KEYWORD_SET)];
+      if (keywords.length === 0) {
         return;
       }
-      nd_attributes.forEach((attr) => {
-        const attribute_id_valid = KEYWORD_SET.has(attr) || PARAMETER_SET.has(attr);
-        if (!attribute_id_valid) {
-          this.fragment_check_result.add_error(`Unknown attribute ${attr} in element ${element_html}`);
+      if (keywords.length > 1) {
+        this.fragment_check_result.add_error(`KEYWORD | Too many nd-keywords found. Element : ${element_html}`);
+        return;
+      }
+      const keyword_name = keywords[0];
+      const keyword = Object.values(KEYWORDS).find((k) => k.name === keyword_name);
+      if (keyword?.tags) {
+        if (!keyword.tags.includes(WILDCARD) && !keyword.tags.includes(element.tagName.toLowerCase())) {
+          this.fragment_check_result.add_error(`KEYWORD | The ${keyword.name} keyword should only appear on following tag(s) : ${keyword.tags.join(", ")}`);
         }
-        if (kwds.length > 0 || attr === syntax.keyword.name)
+      }
+      if (element.getAttribute(keyword_name))
+        this.fragment_check_result.add_warning(`KEYWORD | An nd-keyword (${keyword_name}) cannot have a value. Element : ${element_html}`);
+    };
+    static check_element = (element) => {
+      const element_html = Util.truncate(element.outerHTML);
+      const parameters = this.find_nd_parameters(element);
+      this.check_keywords(element);
+      const syntax = this.find_syntax(element) || DEFAULT_SYNTAX;
+      const used_syntax = syntax.keyword.name.toUpperCase();
+      parameters.forEach((param) => {
+        if (param === syntax.keyword.name)
           return;
-        const attribute = syntax.optional.find((a) => a.name === attr) || syntax.required.find((a) => a.name === attr);
-        if (!attribute) {
-          this.fragment_check_result.add_error(`Attribute ${attr} cannot be used on element ${element_html}`);
-        } else if (!attribute.standalone)
-          this.fragment_check_result.add_error(`Attribute ${attr} is not standalone and therfore cannot be used on element ${element_html}`);
-      });
-      syntax.required.forEach((required) => {
-        if (!element.hasAttribute(required.name)) {
-          this.fragment_check_result.add_error(`Mandatory parameter ${required.name} is missing on element ${element_html}`);
-        } else if (required.needsvalue && !element.getAttribute(required.name)?.trim()) {
-          this.fragment_check_result.add_error(`Parameter ${required.name} has no value on element ${element_html}`);
+        const parameter_is_valid = VOCABULARY_SET.has(param);
+        if (!parameter_is_valid) {
+          this.fragment_check_result.add_error(`${used_syntax} | Unknown attribute ${param} on element ${element_html}`);
+          return;
+        }
+        const parameter = Object.values(PARAMETERS).find((p) => p.name === param);
+        const parameter_has_value = element.getAttribute(param)?.trim() !== "";
+        if (parameter?.needsvalue && !parameter_has_value) {
+          this.fragment_check_result.add_error(`${used_syntax} | Parameter ${parameter.name} has no value on element ${element_html}`);
         }
       });
-      syntax.optional.forEach((optional) => {
-        if (element.hasAttribute(optional.name) && optional.needsvalue && !element.getAttribute(optional.name)?.trim()) {
-          this.fragment_check_result.add_error(`Parameter ${optional.name} has no value on element ${element_html}`);
-        }
+      if (syntax.requires.length === 0)
+        return;
+      const required_parameters = new Set(syntax.requires);
+      const present_parameters = /* @__PURE__ */ new Set();
+      syntax.requires.forEach((param) => {
+        element.hasAttribute(param.name) ? present_parameters.add(param) : {};
       });
+      const required_parameter_names = syntax.requires.flatMap((e) => e.name).join(", ");
+      const all_present = required_parameters.size === required_parameters.intersection(present_parameters).size;
+      if (syntax.requires_all) {
+        if (!all_present)
+          this.fragment_check_result.add_error(`${used_syntax} | One of the ${required_parameter_names} parameter(s) is missing on element ${element_html}`);
+      } else {
+        if (!present_parameters.size)
+          this.fragment_check_result.add_error(`${used_syntax} | At least one of the ${required_parameter_names} parameter(s) must be on element ${element_html}`);
+      }
     };
   };
   var check_fragment = (fragment) => {
     SyntaxCheck.clear_errors();
-    find_nd_elements(fragment).forEach((element) => {
+    const nd_elements = find_nd_elements(fragment);
+    nd_elements.forEach((element) => {
       SyntaxCheck.check_element(element);
     });
     SyntaxCheck.dump_errors_and_warnings();
@@ -2042,7 +2084,7 @@ var nd_core = (() => {
         }
       }
     };
-    static truncate(input, len = 50) {
+    static truncate(input, len = TRUNCATE_LENGTH) {
       if (typeof input !== "string")
         return input;
       const text = input.trim().replace(/\s+/g, " ").split(" ").join(" ").trim();
@@ -2088,11 +2130,11 @@ var nd_core = (() => {
       return document.createRange().createContextualFragment(html);
     }
     static refresh(fragment) {
+      const x = check_fragment(fragment);
       for (const [_, handler] of Object.entries(nd_core.handlers)) {
         logger.info(`Process by ${handler.constructor.name}`);
         handler.process(fragment);
       }
-      check_fragment(fragment);
       for (const [_, handler] of Object.entries(nd_core.handlers)) {
         logger.info(`Postprocess by ${handler.constructor.name}`);
         handler.postprocess();
@@ -2444,7 +2486,7 @@ ${headers_dump.join("\n")}`);
 
   // src/components/notifications/alert.ts
   var HTML_TEMPLATE = `
-<div nd-notification id="$id" class="nd-notification bg-$severity-subtle">
+<div class="nd-notification bg-$severity-subtle">
     <div class="nd-content">
         <span data-close class="nd-close">&times;</span>
         $message
@@ -2461,7 +2503,7 @@ ${headers_dump.join("\n")}`);
 
   // src/components/notifications/toast.ts
   var HTML_TEMPLATE2 = `
-<div nd-notification id="$id" class="nd-toast" role="alert">
+<div id="$id" class="nd-toast" role="alert">
     <div class="nd-content">
         <span data-close class="nd-close">&times;</span>
         <h5 class="nd-toast-header">$title</h5>
@@ -2566,10 +2608,7 @@ ${headers_dump.join("\n")}`);
                 break;
               case "reset":
                 targets.forEach((t) => {
-                  t.reset();
-                });
-                targets.forEach((t) => {
-                  t.dispatchEvent(new CustomEvent(ND_EVENTS.RESET));
+                  t instanceof HTMLFormElement ? t.reset() : {};
                 });
                 break;
             }
@@ -2792,7 +2831,7 @@ ${headers_dump.join("\n")}`);
       this.target = element.getAttribute(PARAMETERS.TARGET.name)?.trim() ?? "";
       this.targets = this.target ? Array.from(document.querySelectorAll(this.target)) : [this.element];
       if (element.hasAttribute(KEYWORDS.SOURCE.name)) {
-        new HandlerTracker().add_listener(this.element, ND_EVENTS.RESET, this.refresh);
+        HandlerTracker.getInstance().add_listener(this.element, ND_EVENTS.RESET, this.refresh);
       }
       this.refresh();
       if (element.hasAttribute(KEYWORDS.MAIN.name)) {
@@ -3493,7 +3532,7 @@ ${headers_dump.join("\n")}`);
       const has_reset = element.hasAttribute("nd-reset");
       const has_dialog = element.hasAttribute("nd-dialog");
       const has_confim = element.hasAttribute("nd-confirm");
-      const handler_tracker2 = new HandlerTracker();
+      const handler_tracker2 = HandlerTracker.getInstance();
       const errors = [];
       if (has_href && has_nd_url) {
         errors.push(`Use 'href' or 'nd-url', not both !`, element);
@@ -3509,7 +3548,7 @@ ${headers_dump.join("\n")}`);
       const href = element.getAttribute("href");
       this.url = href || element.getAttribute("nd-url") || "";
       this.action = has_action ? new Action(element) : null;
-      element.removeAttribute("data-ndtrack");
+      element.removeAttribute(PARAMETERS.TRACKID.name);
       if (has_confim) {
         const template_id = element.getAttribute("nd-confirm") || "";
         console.log("Confirm template ID", template_id);
@@ -3530,10 +3569,10 @@ ${headers_dump.join("\n")}`);
         }
         this.dialog_template_id = template_id;
       }
-      this.targets = element.getAttribute("nd-target") || "";
+      this.targets = element.getAttribute(PARAMETERS.TARGET.name) || "";
       this.resets = element.getAttribute("nd-reset") || "";
       handler_tracker2.add_listener(element, "click", this.click_handler);
-      this.logger.info(`New Link created (${element.getAttribute("data-ndtrack")}).`);
+      this.logger.info(`New Link created (${element.getAttribute(PARAMETERS.TRACKID.name)}).`);
     }
     static LOGGER = new Logger("Link", true);
     logger;
@@ -3565,7 +3604,7 @@ ${headers_dump.join("\n")}`);
           Fetcher.get().fetch_data(this.url, payload).then((data) => {
             if (data) {
               Util.get_targets(this.targets).forEach((t) => {
-                if (t.tagName === "INPUT") {
+                if (t instanceof HTMLInputElement) {
                   t.value = data;
                 } else {
                   const fragment = Util.create_fragment(data);
@@ -3580,14 +3619,14 @@ ${headers_dump.join("\n")}`);
       }
     };
     static create_link = (element, url) => {
-      element.setAttribute("nd-link", "");
-      element.setAttribute("nd-url", url);
+      element.setAttribute(KEYWORDS.NAV.name, "");
+      element.setAttribute(PARAMETERS.URL.name, url);
       return new _Link(element);
     };
     static clear_link = (element) => {
-      element.removeAttribute("nd-link");
-      element.removeAttribute("nd-url");
-      element.removeAttribute("data-ndtrack");
+      element.removeAttribute(KEYWORDS.NAV.name);
+      element.removeAttribute(PARAMETERS.URL.name);
+      element.removeAttribute(PARAMETERS.TRACKID.name);
       element.style.cursor = "";
     };
   };
@@ -3685,7 +3724,8 @@ ${headers_dump.join("\n")}`);
       const value = option.getAttribute("value") ?? "";
       const url = option.getAttribute(PARAMETERS.URL.name);
       this.targets.forEach((target) => {
-        const target_html = Util.truncate(target.outerHTML, 80);
+        const target_html = Util.truncate(target.outerHTML);
+        const reset_on_hide = target.hasAttribute("nd-hide-reset");
         const nd_show_for = target.getAttribute(PARAMETERS.SHOWFOR.name);
         const nd_hide_for = target.getAttribute(PARAMETERS.HIDEFOR.name);
         const nd_follow = target.hasAttribute(PARAMETERS.FOLLOW.name);
@@ -3725,13 +3765,14 @@ ${headers_dump.join("\n")}`);
             Util.insert_fragment(target, fragment, false, true);
           });
         }
-        if (show_targets.includes("*")) {
+        if (show_targets.includes(WILDCARD)) {
           target.hidden = value ? false : true;
-          show_targets.splice(show_targets.indexOf("*"), 1);
+          reset_on_hide ? target.innerHTML = "" : {};
+          show_targets.splice(show_targets.indexOf(WILDCARD), 1);
         }
-        if (hide_targets.includes("*")) {
+        if (hide_targets.includes(WILDCARD)) {
           target.hidden = value ? true : false;
-          hide_targets.splice(hide_targets.indexOf("*"), 1);
+          hide_targets.splice(hide_targets.indexOf(WILDCARD), 1);
         }
         if (show_targets.length)
           target.hidden = !show_targets.includes(value);
@@ -3749,7 +3790,7 @@ ${headers_dump.join("\n")}`);
     }
     process = (fragment) => {
       fragment.querySelectorAll(`[${KEYWORDS.SELECT.name}]`).forEach((element) => {
-        this.logger.info(`Processing element ${Util.truncate(element.outerHTML, 80)}`);
+        this.logger.info(`Processing element ${Util.truncate(element.outerHTML)}`);
         const xx = new Select(element);
       });
     };

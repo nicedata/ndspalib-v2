@@ -1,6 +1,5 @@
-import { CheckResult } from "../main";
-import { ND_EVENTS } from "../main/constants";
-import { check_fragment, KEYWORDS, PARAMETERS } from "../syntax/syntax";
+import { ND_EVENTS, WILDCARD } from "../main/constants";
+import { PARAMETERS } from "../syntax/syntax";
 import { HandlerTracker } from "../trackers/handler_tracker";
 import { Fetcher } from "./fetcher";
 import { Link } from "./link";
@@ -17,12 +16,6 @@ export class Select {
     private nd_selected!: string;
 
     constructor(private element: HTMLSelectElement) {
-
-
-        // if (check_fragment(element) === CheckResult.FAILURE) {
-        //     console.error('S> FAILURE');
-        //     return;
-        // }
 
         // Process the nd-default attribute an set the initial select content
         const dflt = element.getAttribute(PARAMETERS.DEFAULT.name);
@@ -144,7 +137,8 @@ export class Select {
         const url = option.getAttribute(PARAMETERS.URL.name);
 
         this.targets.forEach((target) => {
-            const target_html = Util.truncate(target.outerHTML, 80);
+            const target_html = Util.truncate(target.outerHTML);
+            const reset_on_hide = target.hasAttribute('nd-hide-reset');
 
 
             // Values
@@ -161,7 +155,6 @@ export class Select {
                 logger.error(`'${PARAMETERS.SYNC.name}', '${PARAMETERS.FOLLOW.name}' and '${PARAMETERS.ACTIVATE.name}' are mutually exclusive.  Element : ${target_html}`);
                 return;
             }
-
 
             // Composite
             const nd_url = target.getAttribute(PARAMETERS.URL.name);
@@ -210,15 +203,16 @@ export class Select {
 
 
             // Show wildcards
-            if (show_targets.includes("*")) {
+            if (show_targets.includes(WILDCARD)) {
                 target.hidden = value ? false : true;
-                show_targets.splice(show_targets.indexOf("*"), 1);
+                reset_on_hide ? target.innerHTML = '' : {};
+                show_targets.splice(show_targets.indexOf(WILDCARD), 1);
             }
 
             // Hide wildcards
-            if (hide_targets.includes("*")) {
+            if (hide_targets.includes(WILDCARD)) {
                 target.hidden = value ? true : false;
-                hide_targets.splice(hide_targets.indexOf("*"), 1);
+                hide_targets.splice(hide_targets.indexOf(WILDCARD), 1);
             }
 
             // Specific shows

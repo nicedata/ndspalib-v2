@@ -15,7 +15,7 @@
 Targets are specified in the select element with the `nd-target` attribute which contains a CSS selector as shown here :
 
 ```html
-<select nd-select class="..." nd-target="p .level-dependent .testor #d5" nd-url="/select-options.html">
+<select nd-select class="..." nd-target="p .level-dependent .testor #d5" nd-url="/partials/select-options.html">
 ```
 
 ### Target attributes

@@ -8,7 +8,6 @@
  * It provides a postprocess method that should be called after each DOM update to remove event listeners from elements that are no longer in the DOM.
  * It also provides an add_listener method to add event listeners to elements and track them.
  */
-import { Logger } from "../modules";
 import { Util } from "../modules/util";
 import { AbstractProcessor } from "../processors/abstract_processor";
 

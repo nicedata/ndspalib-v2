@@ -12,8 +12,9 @@ export interface Parameter {
 }
 
 export interface Syntax {
-    readonly keyword: Keyword;
-    readonly required: Parameter[];
+    readonly keyword: Keyword; // The keyword
+    readonly requires: Parameter[]; // Required parameters (may be one of them, see requires all)
+    readonly requires_all: boolean; // True : all required parameters must be present, False: one of the parameters must be present
     readonly optional: Parameter[];
 }
 

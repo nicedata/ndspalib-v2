@@ -3,7 +3,7 @@ import { Debug } from "../modules/debug";
 import { Fetcher } from "../modules/fetcher";
 import { Logger } from "../modules/logger";
 import { BaseTracker } from "../trackers/base_tracker";
-import { PROGNAME, VERSION, NO_CONTEXT } from "./constants";
+import { PROGNAME, NO_CONTEXT } from "./constants";
 import { Util } from "../modules/util";
 import { AlertSeverity } from "./types";
 import { Alert } from "../components/notifications/alert";
